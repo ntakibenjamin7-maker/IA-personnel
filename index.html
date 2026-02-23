@@ -4,15 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Diário IA — Journal Intime Intelligent</title>
-  <meta name="description" content="Votre journal intime intelligent et 100% privé. Analysez vos émotions avec l'IA Claude d'Anthropic." />
+  <meta name="description" content="Votre journal intime intelligent et 100% privé." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
-    /* ─────────────────────────────────────────────
-       DESIGN SYSTEM — DIÁRIO IA
-       Aesthetic: Warm editorial · Intimate · Paper
-    ───────────────────────────────────────────── */
     :root {
       --ink: #1a1614;
       --ink-soft: #4a3f3a;
@@ -33,890 +29,180 @@
       --radius-sm: 10px;
       --shadow-soft: 0 2px 20px rgba(26,22,20,0.06);
       --shadow-card: 0 4px 32px rgba(26,22,20,0.10);
-      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
       --font-serif: 'Lora', Georgia, serif;
       --font-sans: 'DM Sans', system-ui, sans-serif;
     }
-
     [data-theme="dark"] {
-      --ink: #f0ebe5;
-      --ink-soft: #c8bdb5;
-      --ink-muted: #8a7e78;
-      --paper: #1a1614;
-      --paper-warm: #221e1b;
-      --paper-dark: #2e2824;
-      --parchment: #3a332e;
-      --accent: #d4956c;
-      --accent-soft: #6b4535;
-      --accent-pale: #2a1e16;
-      --sage: #7aaa8a;
-      --sage-pale: #1a2e22;
-      --lavender: #b4a4cc;
-      --lavender-pale: #231e30;
+      --ink: #f0ebe5; --ink-soft: #c8bdb5; --ink-muted: #8a7e78;
+      --paper: #1a1614; --paper-warm: #221e1b; --paper-dark: #2e2824;
+      --parchment: #3a332e; --accent: #d4956c; --accent-soft: #6b4535;
+      --accent-pale: #2a1e16; --sage: #7aaa8a; --sage-pale: #1a2e22;
+      --lavender: #b4a4cc; --lavender-pale: #231e30;
       --shadow-soft: 0 2px 20px rgba(0,0,0,0.25);
       --shadow-card: 0 4px 32px rgba(0,0,0,0.35);
     }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: var(--font-sans);
-      background: var(--paper);
-      color: var(--ink);
-      min-height: 100vh;
-      transition: background var(--transition), color var(--transition);
-      overflow-x: hidden;
-    }
-
-    /* ── Texture de fond papier ───────────────── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(193,127,90,0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 80% at 85% 90%, rgba(155,141,180,0.05) 0%, transparent 60%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* ─────────────────────────────────────────────
-       LAYOUT
-    ───────────────────────────────────────────── */
-    .app {
-      position: relative;
-      z-index: 1;
-      max-width: 480px;
-      margin: 0 auto;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* ─────────────────────────────────────────────
-       SCREENS
-    ───────────────────────────────────────────── */
-    .screen {
-      display: none;
-      flex-direction: column;
-      flex: 1;
-      animation: fadeIn 0.4s ease;
-    }
-    .screen.active { display: flex; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ─────────────────────────────────────────────
-       ONBOARDING
-    ───────────────────────────────────────────── */
-    #screen-onboarding {
-      justify-content: center;
-      padding: 48px 32px;
-      gap: 0;
-    }
-
-    .onboarding-step {
-      display: none;
-      flex-direction: column;
-      gap: 0;
-      animation: fadeIn 0.35s ease;
-    }
-    .onboarding-step.active { display: flex; }
-
-    .step-indicator {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 40px;
-    }
-    .step-dot {
-      height: 3px;
-      border-radius: 2px;
-      background: var(--parchment);
-      flex: 1;
-      transition: background var(--transition);
-    }
-    .step-dot.done { background: var(--accent); }
-
-    .ob-icon {
-      font-size: 56px;
-      margin-bottom: 24px;
-      display: block;
-      animation: float 4s ease-in-out infinite;
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
-    }
-
-    .ob-title {
-      font-family: var(--font-serif);
-      font-size: 28px;
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--ink);
-      margin-bottom: 12px;
-    }
-
-    .ob-sub {
-      font-size: 15px;
-      line-height: 1.65;
-      color: var(--ink-soft);
-      margin-bottom: 36px;
-    }
-
-    .lang-options {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 36px;
-    }
-    .lang-option {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 18px;
-      border-radius: var(--radius-sm);
-      border: 1.5px solid var(--parchment);
-      background: var(--paper-warm);
-      cursor: pointer;
-      transition: all var(--transition);
-      font-family: var(--font-sans);
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--ink);
-    }
-    .lang-option:hover { border-color: var(--accent); background: var(--accent-pale); }
-    .lang-option.selected { border-color: var(--accent); background: var(--accent-pale); color: var(--accent); }
-    .lang-flag { font-size: 22px; }
-
-    .privacy-card {
-      background: var(--paper-warm);
-      border: 1px solid var(--parchment);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 36px;
-    }
-    .privacy-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 12px;
-      font-size: 14px;
-      line-height: 1.5;
-      color: var(--ink-soft);
-    }
-    .privacy-row:last-child { margin-bottom: 0; }
-    .privacy-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-
-    /* ─────────────────────────────────────────────
-       HEADER / NAV
-    ───────────────────────────────────────────── */
-    .app-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 24px 0;
-    }
-
-    .header-title {
-      font-family: var(--font-serif);
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--ink);
-      letter-spacing: -0.01em;
-    }
-
-    .header-actions { display: flex; gap: 4px; }
-
-    .icon-btn {
-      width: 40px; height: 40px;
-      border-radius: 10px;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      color: var(--ink-soft);
-      font-size: 18px;
-      display: flex; align-items: center; justify-content: center;
-      transition: all var(--transition);
-    }
-    .icon-btn:hover { background: var(--paper-dark); color: var(--ink); }
-    .icon-btn svg { width: 20px; height: 20px; }
-
-    /* ─────────────────────────────────────────────
-       BOTTOM NAV
-    ───────────────────────────────────────────── */
-    .bottom-nav {
-      display: none;
-      position: sticky;
-      bottom: 0;
-      background: var(--paper);
-      border-top: 1px solid var(--parchment);
-      padding: 0 8px env(safe-area-inset-bottom, 12px);
-      gap: 0;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-    }
-    .bottom-nav.visible { display: flex; }
-
-    .nav-item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      padding: 12px 0;
-      border: none;
-      background: none;
-      cursor: pointer;
-      color: var(--ink-muted);
-      font-family: var(--font-sans);
-      font-size: 11px;
-      font-weight: 500;
-      transition: color var(--transition);
-    }
-    .nav-item svg { width: 22px; height: 22px; }
-    .nav-item.active { color: var(--accent); }
-    .nav-item.active svg { stroke-width: 2.5; }
-
-    /* ─────────────────────────────────────────────
-       JOURNAL SCREEN
-    ───────────────────────────────────────────── */
-    #screen-journal {
-      padding: 0;
-    }
-
-    .journal-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 20px 24px 0;
-    }
-
-    .date-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--ink-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 16px;
-    }
-    .date-dot {
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      background: var(--accent);
-    }
-
-    .journal-textarea {
-      flex: 1;
-      min-height: 280px;
-      background: transparent;
-      border: none;
-      outline: none;
-      resize: none;
-      font-family: var(--font-serif);
-      font-size: 17px;
-      line-height: 1.75;
-      color: var(--ink);
-      width: 100%;
-      caret-color: var(--accent);
-    }
-    .journal-textarea::placeholder { color: var(--ink-muted); font-style: italic; }
-
-    .journal-footer {
-      padding: 16px 24px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .word-count {
-      font-size: 12px;
-      color: var(--ink-muted);
-      text-align: center;
-      height: 16px;
-    }
-
-    .journal-actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    /* ─────────────────────────────────────────────
-       BUTTONS
-    ───────────────────────────────────────────── */
-    .btn {
-      font-family: var(--font-sans);
-      font-size: 15px;
-      font-weight: 600;
-      border: none;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all var(--transition);
-      text-decoration: none;
-    }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .btn-primary {
-      background: var(--ink);
-      color: var(--paper);
-      padding: 14px 22px;
-      flex: 1;
-    }
-    .btn-primary:hover:not(:disabled) { background: var(--ink-soft); transform: translateY(-1px); box-shadow: var(--shadow-card); }
-
-    .btn-accent {
-      background: var(--accent);
-      color: #fff;
-      padding: 14px 22px;
-    }
-    .btn-accent:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(193,127,90,0.35); }
-
-    .btn-ghost {
-      background: var(--paper-warm);
-      color: var(--ink-soft);
-      padding: 14px 18px;
-      border: 1px solid var(--parchment);
-    }
-    .btn-ghost:hover:not(:disabled) { background: var(--paper-dark); }
-
-    .btn-full { width: 100%; }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--accent);
-      padding: 12px 22px;
-      border: 1.5px solid var(--accent);
-    }
-    .btn-outline:hover { background: var(--accent-pale); }
-
-    .btn-danger {
-      background: transparent;
-      color: var(--error);
-      padding: 12px 22px;
-      border: 1.5px solid var(--error);
-    }
-    .btn-danger:hover { background: rgba(192,85,90,0.08); }
-
-    .btn-text {
-      background: none;
-      color: var(--ink-muted);
-      padding: 12px;
-      font-size: 14px;
-      font-weight: 400;
-    }
-    .btn-text:hover { color: var(--ink); }
-
-    /* ─────────────────────────────────────────────
-       LOADING SPINNER
-    ───────────────────────────────────────────── */
-    .spinner {
-      width: 18px; height: 18px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ─────────────────────────────────────────────
-       ANALYSIS SCREEN
-    ───────────────────────────────────────────── */
-    #screen-analysis {
-      padding: 0;
-    }
-
-    .analysis-header {
-      padding: 20px 24px 0;
-    }
-
-    .analysis-back {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--ink-muted);
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      border: none;
-      background: none;
-      padding: 0;
-      margin-bottom: 24px;
-      transition: color var(--transition);
-    }
-    .analysis-back:hover { color: var(--ink); }
-    .analysis-back svg { width: 16px; height: 16px; }
-
-    .analysis-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0 24px 32px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .analysis-card {
-      border-radius: var(--radius);
-      padding: 20px;
-      animation: slideUp 0.4s ease both;
-    }
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .card-paper { background: var(--paper-warm); border: 1px solid var(--parchment); }
-    .card-accent { background: var(--accent-pale); border: 1px solid var(--accent-soft); }
-    .card-sage   { background: var(--sage-pale); border: 1px solid rgba(122,158,138,0.3); }
-    .card-lavender { background: var(--lavender-pale); border: 1px solid rgba(155,141,180,0.25); }
-
-    .card-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--ink-muted);
-      margin-bottom: 12px;
-    }
-    .card-label-accent { color: var(--accent); }
-    .card-label-sage { color: var(--sage); }
-    .card-label-lavender { color: var(--lavender); }
-
-    .mood-display {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .mood-emoji { font-size: 40px; line-height: 1; }
-    .mood-label {
-      font-family: var(--font-serif);
-      font-size: 22px;
-      font-weight: 600;
-      color: var(--ink);
-    }
-
-    .bullet-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .bullet-item {
-      display: flex;
-      gap: 10px;
-      font-size: 14px;
-      line-height: 1.6;
-      color: var(--ink-soft);
-    }
-    .bullet-marker {
-      font-weight: 700;
-      color: var(--accent);
-      flex-shrink: 0;
-      width: 16px;
-      margin-top: 1px;
-    }
-    .bullet-marker-sage { color: var(--sage); }
-    .bullet-marker-lavender { color: var(--lavender); }
-
-    .reframing-text {
-      font-family: var(--font-serif);
-      font-size: 15px;
-      line-height: 1.75;
-      color: var(--ink-soft);
-      font-style: italic;
-    }
-
-    .micro-action-text {
-      font-size: 15px;
-      font-weight: 600;
-      line-height: 1.5;
-      color: var(--ink);
-    }
-
-    /* ─────────────────────────────────────────────
-       INSIGHTS (HISTORY) SCREEN
-    ───────────────────────────────────────────── */
-    #screen-insights {
-      overflow: hidden;
-    }
-
-    .insights-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 24px 32px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .entry-card {
-      background: var(--paper-warm);
-      border: 1px solid var(--parchment);
-      border-radius: var(--radius);
-      padding: 16px 18px;
-      cursor: pointer;
-      transition: all var(--transition);
-    }
-    .entry-card:hover { border-color: var(--accent-soft); box-shadow: var(--shadow-soft); transform: translateY(-1px); }
-
-    .entry-card-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-    .entry-date { font-size: 12px; color: var(--ink-muted); font-weight: 500; }
-    .entry-mood-badge {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--accent);
-      background: var(--accent-pale);
-      border-radius: 6px;
-      padding: 3px 8px;
-    }
-    .entry-preview {
-      font-family: var(--font-serif);
-      font-size: 14px;
-      line-height: 1.55;
-      color: var(--ink-soft);
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .empty-state {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      padding: 48px 32px;
-      color: var(--ink-muted);
-      text-align: center;
-    }
-    .empty-icon { font-size: 52px; }
-    .empty-title { font-family: var(--font-serif); font-size: 18px; color: var(--ink-soft); }
-    .empty-sub { font-size: 14px; line-height: 1.6; }
-
-    /* ─────────────────────────────────────────────
-       SETTINGS SCREEN
-    ───────────────────────────────────────────── */
-    #screen-settings {
-      overflow: hidden;
-    }
-
-    .settings-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 8px 24px 32px;
-    }
-
-    .settings-section-title {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--accent);
-      padding: 20px 0 8px;
-    }
-
-    .settings-card {
-      background: var(--paper-warm);
-      border: 1px solid var(--parchment);
-      border-radius: var(--radius);
-      overflow: hidden;
-      margin-bottom: 4px;
-    }
-
-    .settings-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 15px 18px;
-      border-bottom: 1px solid var(--parchment);
-      cursor: pointer;
-      transition: background var(--transition);
-      gap: 12px;
-    }
-    .settings-row:last-child { border-bottom: none; }
-    .settings-row:hover { background: var(--paper-dark); }
-
-    .settings-row-left { display: flex; align-items: center; gap: 12px; }
-    .settings-row-icon {
-      width: 34px; height: 34px;
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
-      background: var(--accent-pale);
-      flex-shrink: 0;
-    }
-    .settings-row-icon.sage { background: var(--sage-pale); }
-    .settings-row-icon.lavender { background: var(--lavender-pale); }
-    .settings-row-icon.danger { background: rgba(192,85,90,0.1); }
-
-    .settings-row-text {}
-    .settings-row-label { font-size: 15px; font-weight: 500; color: var(--ink); }
-    .settings-row-sub { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
-
-    .settings-row-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--ink-muted);
-      font-size: 13px;
-    }
-    .settings-row-right svg { width: 16px; height: 16px; }
-
-    /* Toggle */
-    .toggle-row { cursor: default; }
-    .toggle {
-      width: 44px; height: 26px;
-      background: var(--parchment);
-      border-radius: 13px;
-      position: relative;
-      cursor: pointer;
-      transition: background var(--transition);
-      flex-shrink: 0;
-    }
-    .toggle::after {
-      content: '';
-      position: absolute;
-      width: 20px; height: 20px;
-      background: white;
-      border-radius: 50%;
-      top: 3px; left: 3px;
-      transition: transform var(--transition);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-    }
-    .toggle.on { background: var(--accent); }
-    .toggle.on::after { transform: translateX(18px); }
-
-    /* Dropdown */
-    select.settings-select {
-      font-family: var(--font-sans);
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--ink-soft);
-      background: var(--paper-dark);
-      border: 1px solid var(--parchment);
-      border-radius: 8px;
-      padding: 6px 10px;
-      outline: none;
-      cursor: pointer;
-      -webkit-appearance: auto;
-    }
-
-    /* ─────────────────────────────────────────────
-       MODALS
-    ───────────────────────────────────────────── */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(26,22,20,0.6);
-      backdrop-filter: blur(4px);
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-      z-index: 100;
-      animation: overlayIn 0.2s ease;
-    }
-    .modal-overlay.open { display: flex; }
-    @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
-
-    .modal-sheet {
-      background: var(--paper);
-      border-radius: 24px 24px 0 0;
-      padding: 24px 24px 40px;
-      width: 100%;
-      max-width: 480px;
-      animation: sheetUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      max-height: 85vh;
-      overflow-y: auto;
-    }
-    @keyframes sheetUp {
-      from { transform: translateY(100%); }
-      to   { transform: translateY(0); }
-    }
-
-    .modal-handle {
-      width: 36px; height: 4px;
-      background: var(--parchment);
-      border-radius: 2px;
-      margin: 0 auto 20px;
-    }
-
-    .modal-title {
-      font-family: var(--font-serif);
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-    .modal-sub {
-      font-size: 14px;
-      color: var(--ink-muted);
-      line-height: 1.6;
-      margin-bottom: 24px;
-    }
-
-    /* ─────────────────────────────────────────────
-       FORM ELEMENTS
-    ───────────────────────────────────────────── */
-    .form-group { margin-bottom: 16px; }
-    .form-label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--ink-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 8px;
-    }
-    .form-input {
-      width: 100%;
-      font-family: var(--font-sans);
-      font-size: 15px;
-      color: var(--ink);
-      background: var(--paper-warm);
-      border: 1.5px solid var(--parchment);
-      border-radius: var(--radius-sm);
-      padding: 12px 16px;
-      outline: none;
-      transition: border-color var(--transition);
-    }
-    .form-input:focus { border-color: var(--accent); }
-    .form-input::placeholder { color: var(--ink-muted); }
-
-    /* ─────────────────────────────────────────────
-       TOAST NOTIFICATIONS
-    ───────────────────────────────────────────── */
-    .toast-container {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 200;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-items: center;
-      pointer-events: none;
-    }
-
-    .toast {
-      background: var(--ink);
-      color: var(--paper);
-      font-size: 13px;
-      font-weight: 500;
-      padding: 10px 18px;
-      border-radius: 100px;
-      box-shadow: var(--shadow-card);
-      animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s both;
-      white-space: nowrap;
-      max-width: 300px;
-    }
-    .toast.error { background: var(--error); }
-    @keyframes toastIn { from { opacity: 0; transform: translateY(10px) scale(0.95); } to { opacity: 1; transform: none; } }
-    @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateY(6px); } }
-
-    /* ─────────────────────────────────────────────
-       API KEY STATUS
-    ───────────────────────────────────────────── */
-    .api-status {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 500;
-    }
-    .api-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: var(--error);
-    }
-    .api-dot.ok { background: var(--sage); }
-
-    /* ─────────────────────────────────────────────
-       SEGMENTED CONTROL (THEME)
-    ───────────────────────────────────────────── */
-    .segmented {
-      display: flex;
-      background: var(--paper-dark);
-      border-radius: 10px;
-      padding: 3px;
-      gap: 2px;
-    }
-    .seg-btn {
-      flex: 1;
-      font-family: var(--font-sans);
-      font-size: 12px;
-      font-weight: 500;
-      padding: 7px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      background: transparent;
-      color: var(--ink-muted);
-      transition: all var(--transition);
-    }
-    .seg-btn.active {
-      background: var(--paper);
-      color: var(--ink);
-      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
-    }
-
-    /* ─────────────────────────────────────────────
-       RESPONSIVE (desktop centered)
-    ───────────────────────────────────────────── */
-    @media (min-width: 540px) {
-      body { padding: 24px 0; display: flex; justify-content: center; }
-      .app {
-        min-height: calc(100vh - 48px);
-        height: calc(100vh - 48px);
-        border-radius: 24px;
-        overflow: hidden;
-        box-shadow: var(--shadow-card), 0 0 0 1px var(--parchment);
-      }
-      .bottom-nav {
-        position: sticky;
-        border-radius: 0 0 24px 24px;
-      }
-    }
-
-    /* ─────────────────────────────────────────────
-       DECORATIVE
-    ───────────────────────────────────────────── */
-    .section-divider {
-      height: 1px;
-      background: var(--parchment);
-      margin: 8px 0;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font-sans);background:var(--paper);color:var(--ink);min-height:100vh;transition:background var(--transition),color var(--transition);overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(193,127,90,.06) 0%,transparent 60%),radial-gradient(ellipse 60% 80% at 85% 90%,rgba(155,141,180,.05) 0%,transparent 60%);pointer-events:none;z-index:0}
+    .app{position:relative;z-index:1;max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+    .screen{display:none;flex-direction:column;flex:1;animation:fadeIn .4s ease}
+    .screen.active{display:flex}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+    /* ONBOARDING */
+    #screen-onboarding{justify-content:center;padding:48px 32px}
+    .onboarding-step{display:none;flex-direction:column;animation:fadeIn .35s ease}
+    .onboarding-step.active{display:flex}
+    .step-indicator{display:flex;gap:6px;margin-bottom:40px}
+    .step-dot{height:3px;border-radius:2px;background:var(--parchment);flex:1;transition:background var(--transition)}
+    .step-dot.done{background:var(--accent)}
+    .ob-icon{font-size:56px;margin-bottom:24px;display:block;animation:float 4s ease-in-out infinite}
+    .ob-title{font-family:var(--font-serif);font-size:28px;font-weight:600;line-height:1.3;margin-bottom:12px}
+    .ob-sub{font-size:15px;line-height:1.65;color:var(--ink-soft);margin-bottom:36px}
+    .lang-options{display:flex;flex-direction:column;gap:10px;margin-bottom:36px}
+    .lang-option{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:var(--radius-sm);border:1.5px solid var(--parchment);background:var(--paper-warm);cursor:pointer;transition:all var(--transition);font-family:var(--font-sans);font-size:15px;font-weight:500;color:var(--ink)}
+    .lang-option:hover,.lang-option.selected{border-color:var(--accent);background:var(--accent-pale);color:var(--accent)}
+    .lang-flag{font-size:22px}
+    .privacy-card{background:var(--paper-warm);border:1px solid var(--parchment);border-radius:var(--radius);padding:20px;margin-bottom:36px}
+    .privacy-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;font-size:14px;line-height:1.5;color:var(--ink-soft)}
+    .privacy-row:last-child{margin-bottom:0}
+    .privacy-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+
+    /* HEADER */
+    .app-header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px 0}
+    .header-title{font-family:var(--font-serif);font-size:18px;font-weight:600;letter-spacing:-.01em}
+    .header-actions{display:flex;gap:4px}
+    .icon-btn{width:40px;height:40px;border-radius:10px;border:none;background:transparent;cursor:pointer;color:var(--ink-soft);font-size:18px;display:flex;align-items:center;justify-content:center;transition:all var(--transition)}
+    .icon-btn:hover{background:var(--paper-dark);color:var(--ink)}
+    .icon-btn svg{width:20px;height:20px}
+
+    /* BOTTOM NAV */
+    .bottom-nav{display:none;position:sticky;bottom:0;background:var(--paper);border-top:1px solid var(--parchment);padding:0 8px env(safe-area-inset-bottom,12px);backdrop-filter:blur(20px)}
+    .bottom-nav.visible{display:flex}
+    .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 0;border:none;background:none;cursor:pointer;color:var(--ink-muted);font-family:var(--font-sans);font-size:11px;font-weight:500;transition:color var(--transition)}
+    .nav-item svg{width:22px;height:22px}
+    .nav-item.active{color:var(--accent)}
+
+    /* JOURNAL */
+    .journal-content{flex:1;display:flex;flex-direction:column;padding:20px 24px 0}
+    .date-chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
+    .date-dot{width:5px;height:5px;border-radius:50%;background:var(--accent)}
+    .journal-textarea{flex:1;min-height:280px;background:transparent;border:none;outline:none;resize:none;font-family:var(--font-serif);font-size:17px;line-height:1.75;color:var(--ink);width:100%;caret-color:var(--accent)}
+    .journal-textarea::placeholder{color:var(--ink-muted);font-style:italic}
+    .journal-footer{padding:16px 24px 20px;display:flex;flex-direction:column;gap:12px}
+    .word-count{font-size:12px;color:var(--ink-muted);text-align:center;height:16px}
+    .journal-actions{display:flex;gap:10px}
+
+    /* BUTTONS */
+    .btn{font-family:var(--font-sans);font-size:15px;font-weight:600;border:none;border-radius:var(--radius-sm);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:all var(--transition);text-decoration:none}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .btn-primary{background:var(--ink);color:var(--paper);padding:14px 22px;flex:1}
+    .btn-primary:hover:not(:disabled){background:var(--ink-soft);transform:translateY(-1px);box-shadow:var(--shadow-card)}
+    .btn-accent{background:var(--accent);color:#fff;padding:14px 22px}
+    .btn-accent:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 6px 20px rgba(193,127,90,.35)}
+    .btn-ghost{background:var(--paper-warm);color:var(--ink-soft);padding:14px 18px;border:1px solid var(--parchment)}
+    .btn-ghost:hover:not(:disabled){background:var(--paper-dark)}
+    .btn-full{width:100%}
+    .btn-outline{background:transparent;color:var(--accent);padding:12px 22px;border:1.5px solid var(--accent)}
+    .btn-outline:hover{background:var(--accent-pale)}
+    .btn-danger{background:transparent;color:var(--error);padding:12px 22px;border:1.5px solid var(--error)}
+    .btn-danger:hover{background:rgba(192,85,90,.08)}
+    .btn-text{background:none;color:var(--ink-muted);padding:12px;font-size:14px;font-weight:400}
+    .btn-text:hover{color:var(--ink)}
+    .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+
+    /* ANALYSIS */
+    .analysis-header{padding:20px 24px 0}
+    .analysis-back{display:flex;align-items:center;gap:8px;color:var(--ink-muted);font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;padding:0;margin-bottom:24px;transition:color var(--transition)}
+    .analysis-back:hover{color:var(--ink)}
+    .analysis-back svg{width:16px;height:16px}
+    .analysis-list{flex:1;overflow-y:auto;padding:0 24px 32px;display:flex;flex-direction:column;gap:14px}
+    .analysis-card{border-radius:var(--radius);padding:20px;animation:slideUp .4s ease both}
+    .card-paper{background:var(--paper-warm);border:1px solid var(--parchment)}
+    .card-accent{background:var(--accent-pale);border:1px solid var(--accent-soft)}
+    .card-sage{background:var(--sage-pale);border:1px solid rgba(122,158,138,.3)}
+    .card-lavender{background:var(--lavender-pale);border:1px solid rgba(155,141,180,.25)}
+    .card-label{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-muted);margin-bottom:12px}
+    .card-label-accent{color:var(--accent)}
+    .card-label-sage{color:var(--sage)}
+    .card-label-lavender{color:var(--lavender)}
+    .mood-display{display:flex;align-items:center;gap:14px}
+    .mood-emoji{font-size:40px;line-height:1}
+    .mood-label{font-family:var(--font-serif);font-size:22px;font-weight:600}
+    .bullet-list{display:flex;flex-direction:column;gap:10px}
+    .bullet-item{display:flex;gap:10px;font-size:14px;line-height:1.6;color:var(--ink-soft)}
+    .bullet-marker{font-weight:700;color:var(--accent);flex-shrink:0;width:16px;margin-top:1px}
+    .bullet-marker-sage{color:var(--sage)}
+    .bullet-marker-lavender{color:var(--lavender)}
+    .reframing-text{font-family:var(--font-serif);font-size:15px;line-height:1.75;color:var(--ink-soft);font-style:italic}
+    .micro-action-text{font-size:15px;font-weight:600;line-height:1.5}
+
+    /* INSIGHTS */
+    .insights-list{flex:1;overflow-y:auto;padding:16px 24px 32px;display:flex;flex-direction:column;gap:10px}
+    .entry-card{background:var(--paper-warm);border:1px solid var(--parchment);border-radius:var(--radius);padding:16px 18px;cursor:pointer;transition:all var(--transition)}
+    .entry-card:hover{border-color:var(--accent-soft);box-shadow:var(--shadow-soft);transform:translateY(-1px)}
+    .entry-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+    .entry-date{font-size:12px;color:var(--ink-muted);font-weight:500}
+    .entry-mood-badge{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-pale);border-radius:6px;padding:3px 8px}
+    .entry-preview{font-family:var(--font-serif);font-size:14px;line-height:1.55;color:var(--ink-soft);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:48px 32px;color:var(--ink-muted);text-align:center}
+    .empty-icon{font-size:52px}
+    .empty-title{font-family:var(--font-serif);font-size:18px;color:var(--ink-soft)}
+    .empty-sub{font-size:14px;line-height:1.6}
+
+    /* SETTINGS */
+    .settings-list{flex:1;overflow-y:auto;padding:8px 24px 32px}
+    .settings-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);padding:20px 0 8px}
+    .settings-card{background:var(--paper-warm);border:1px solid var(--parchment);border-radius:var(--radius);overflow:hidden;margin-bottom:4px}
+    .settings-row{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--parchment);cursor:pointer;transition:background var(--transition);gap:12px}
+    .settings-row:last-child{border-bottom:none}
+    .settings-row:hover{background:var(--paper-dark)}
+    .settings-row-left{display:flex;align-items:center;gap:12px}
+    .settings-row-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--accent-pale);flex-shrink:0}
+    .settings-row-icon.sage{background:var(--sage-pale)}
+    .settings-row-icon.danger{background:rgba(192,85,90,.1)}
+    .settings-row-label{font-size:15px;font-weight:500}
+    .settings-row-sub{font-size:12px;color:var(--ink-muted);margin-top:2px}
+    .settings-row-right{display:flex;align-items:center;gap:8px;color:var(--ink-muted);font-size:13px}
+    .settings-row-right svg{width:16px;height:16px}
+    select.settings-select{font-family:var(--font-sans);font-size:13px;font-weight:500;color:var(--ink-soft);background:var(--paper-dark);border:1px solid var(--parchment);border-radius:8px;padding:6px 10px;outline:none;cursor:pointer}
+    .segmented{display:flex;background:var(--paper-dark);border-radius:10px;padding:3px;gap:2px}
+    .seg-btn{flex:1;font-family:var(--font-sans);font-size:12px;font-weight:500;padding:7px;border:none;border-radius:8px;cursor:pointer;background:transparent;color:var(--ink-muted);transition:all var(--transition)}
+    .seg-btn.active{background:var(--paper);color:var(--ink);box-shadow:0 1px 6px rgba(0,0,0,.1)}
+
+    /* MODALS */
+    .modal-overlay{position:fixed;inset:0;background:rgba(26,22,20,.6);backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center;z-index:100;animation:overlayIn .2s ease}
+    .modal-overlay.open{display:flex}
+    @keyframes overlayIn{from{opacity:0}to{opacity:1}}
+    .modal-sheet{background:var(--paper);border-radius:24px 24px 0 0;padding:24px 24px 40px;width:100%;max-width:480px;animation:sheetUp .3s cubic-bezier(.34,1.56,.64,1);max-height:85vh;overflow-y:auto}
+    @keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+    .modal-handle{width:36px;height:4px;background:var(--parchment);border-radius:2px;margin:0 auto 20px}
+    .modal-title{font-family:var(--font-serif);font-size:20px;font-weight:600;margin-bottom:8px}
+    .modal-sub{font-size:14px;color:var(--ink-muted);line-height:1.6;margin-bottom:24px}
+
+    /* TOAST */
+    .toast-container{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+    .toast{background:var(--ink);color:var(--paper);font-size:13px;font-weight:500;padding:10px 18px;border-radius:100px;box-shadow:var(--shadow-card);animation:toastIn .3s ease,toastOut .3s ease 2.7s both;white-space:nowrap;max-width:320px;text-align:center}
+    .toast.error{background:var(--error)}
+    @keyframes toastIn{from{opacity:0;transform:translateY(10px) scale(.95)}to{opacity:1;transform:none}}
+    @keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateY(6px)}}
+
+    @media(min-width:540px){
+      body{padding:24px 0;display:flex;justify-content:center}
+      .app{min-height:calc(100vh - 48px);height:calc(100vh - 48px);border-radius:24px;overflow:hidden;box-shadow:var(--shadow-card),0 0 0 1px var(--parchment)}
+      .bottom-nav{border-radius:0 0 24px 24px}
     }
   </style>
 </head>
 <body>
 <div class="app" id="app">
 
-  <!-- ════════════════════════════════════════
-       SCREEN: ONBOARDING
-  ════════════════════════════════════════ -->
+  <!-- ONBOARDING -->
   <div class="screen active" id="screen-onboarding">
     <div class="step-indicator">
       <div class="step-dot done" id="dot-0"></div>
@@ -924,153 +210,99 @@
       <div class="step-dot" id="dot-2"></div>
     </div>
 
-    <!-- Step 1: Welcome + Language -->
+    <!-- Étape 1 : Langue -->
     <div class="onboarding-step active" id="ob-step-0">
       <span class="ob-icon">📔</span>
       <h1 class="ob-title">Diário IA</h1>
-      <p class="ob-sub" id="ob-sub-0">Votre journal intime intelligent et 100% privé. Écrivez librement — vos pensées restent sur votre appareil.</p>
+      <p class="ob-sub" id="ob-sub-0">Votre journal intime intelligent et 100% privé.</p>
       <div class="lang-options">
-        <button class="lang-option" data-lang="fr" onclick="selectLang('fr')">
-          <span class="lang-flag">🇫🇷</span> Français
-        </button>
-        <button class="lang-option" data-lang="en" onclick="selectLang('en')">
-          <span class="lang-flag">🇬🇧</span> English
-        </button>
-        <button class="lang-option" data-lang="pt" onclick="selectLang('pt')">
-          <span class="lang-flag">🇧🇷</span> Português
-        </button>
+        <button class="lang-option" data-lang="fr" onclick="selectLang('fr')"><span class="lang-flag">🇫🇷</span> Français</button>
+        <button class="lang-option" data-lang="en" onclick="selectLang('en')"><span class="lang-flag">🇬🇧</span> English</button>
+        <button class="lang-option" data-lang="pt" onclick="selectLang('pt')"><span class="lang-flag">🇧🇷</span> Português</button>
       </div>
       <button class="btn btn-primary btn-full" onclick="goObStep(1)" id="ob-btn-0">Commencer →</button>
     </div>
 
-    <!-- Step 2: Privacy -->
+    <!-- Étape 2 : Vie privée -->
     <div class="onboarding-step" id="ob-step-1">
       <span class="ob-icon">🔒</span>
       <h2 class="ob-title" id="ob-title-1">Votre vie privée</h2>
       <div class="privacy-card">
-        <div class="privacy-row">
-          <span class="privacy-icon">📱</span>
-          <span id="pr-1">Tout est stocké localement sur votre appareil. Aucun serveur, aucun compte.</span>
-        </div>
-        <div class="privacy-row">
-          <span class="privacy-icon">🔑</span>
-          <span id="pr-2">Votre clé API Anthropic est chiffrée dans votre navigateur et jamais partagée.</span>
-        </div>
-        <div class="privacy-row">
-          <span class="privacy-icon">🤖</span>
-          <span id="pr-3">L'analyse IA envoie votre texte directement à Anthropic via HTTPS — sans intermédiaire.</span>
-        </div>
+        <div class="privacy-row"><span class="privacy-icon">📱</span><span id="pr-1">Tout est stocké localement sur votre appareil. Aucun serveur, aucun compte.</span></div>
+        <div class="privacy-row"><span class="privacy-icon">🤖</span><span id="pr-2">L'analyse IA est incluse — aucune clé API requise de votre part.</span></div>
+        <div class="privacy-row"><span class="privacy-icon">🔐</span><span id="pr-3">Vos entrées ne sont jamais lues ni stockées par nous.</span></div>
       </div>
       <button class="btn btn-primary btn-full" onclick="goObStep(2)" id="ob-btn-1">J'ai compris ✓</button>
     </div>
 
-    <!-- Step 3: API Key -->
+    <!-- Étape 3 : Prêt -->
     <div class="onboarding-step" id="ob-step-2">
-      <span class="ob-icon">✨</span>
-      <h2 class="ob-title" id="ob-title-2">Clé API Anthropic</h2>
-      <p class="ob-sub" id="ob-sub-2">Nécessaire pour l'analyse IA. Obtenez une clé gratuitement sur <strong>console.anthropic.com</strong></p>
-      <div class="form-group">
-        <label class="form-label" id="ob-key-label">Votre clé API (optionnel)</label>
-        <input class="form-input" type="password" id="ob-api-key" placeholder="sk-ant-..." />
-      </div>
-      <button class="btn btn-accent btn-full" onclick="finishOnboarding()" id="ob-btn-2" style="margin-bottom:10px">Commencer le journal →</button>
-      <button class="btn btn-text btn-full" onclick="finishOnboarding()" id="ob-skip">Passer pour l'instant</button>
+      <span class="ob-icon">🚀</span>
+      <h2 class="ob-title" id="ob-title-2">Tout est prêt !</h2>
+      <p class="ob-sub" id="ob-sub-2">L'analyse IA est incluse — commencez à écrire dès maintenant.</p>
+      <button class="btn btn-accent btn-full" onclick="finishOnboarding()" id="ob-btn-2">Commencer le journal →</button>
     </div>
   </div>
 
-  <!-- ════════════════════════════════════════
-       SCREEN: JOURNAL
-  ════════════════════════════════════════ -->
+  <!-- JOURNAL -->
   <div class="screen" id="screen-journal">
     <div class="app-header">
       <span class="header-title" id="h-journal">Journal du jour</span>
       <div class="header-actions">
-        <button class="icon-btn" onclick="saveEntry()" title="Enregistrer" id="btn-save-entry">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
-          </svg>
+        <button class="icon-btn" onclick="saveEntry()" title="Enregistrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         </button>
-        <button class="icon-btn" title="Dicter (bientôt)" onclick="showToast('🎤 Dictée vocale — bientôt disponible !', false)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
-          </svg>
+        <button class="icon-btn" onclick="showToast('🎤 Bientôt disponible !')" title="Dicter">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
         </button>
       </div>
     </div>
-
     <div class="journal-content">
-      <div class="date-chip">
-        <span class="date-dot"></span>
-        <span id="journal-date"></span>
-      </div>
-      <textarea
-        class="journal-textarea"
-        id="journal-text"
-        placeholder="Qu'est-ce qui vous traverse l'esprit aujourd'hui ? Écrivez librement, sans jugement…"
-        oninput="onJournalInput()"
-      ></textarea>
+      <div class="date-chip"><span class="date-dot"></span><span id="journal-date"></span></div>
+      <textarea class="journal-textarea" id="journal-text" oninput="onJournalInput()"></textarea>
     </div>
-
     <div class="journal-footer">
       <div class="word-count" id="word-count"></div>
       <div class="journal-actions">
         <button class="btn btn-accent btn-full" id="btn-analyze" onclick="analyzeEntry()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-          </svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           <span id="analyze-label">Analyser avec l'IA</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ════════════════════════════════════════
-       SCREEN: ANALYSIS RESULT
-  ════════════════════════════════════════ -->
+  <!-- ANALYSE RÉSULTAT -->
   <div class="screen" id="screen-analysis">
     <div class="analysis-header">
       <button class="analysis-back" onclick="showScreen('journal')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         <span id="back-label">Retour au journal</span>
       </button>
     </div>
-
-    <div class="analysis-list" id="analysis-content">
-      <!-- Rempli dynamiquement -->
-    </div>
+    <div class="analysis-list" id="analysis-content"></div>
   </div>
 
-  <!-- ════════════════════════════════════════
-       SCREEN: INSIGHTS / HISTORY
-  ════════════════════════════════════════ -->
+  <!-- HISTORIQUE -->
   <div class="screen" id="screen-insights">
     <div class="app-header">
       <span class="header-title" id="h-insights">Mon journal</span>
     </div>
-    <div class="insights-list" id="insights-list">
-      <!-- Rempli dynamiquement -->
-    </div>
+    <div class="insights-list" id="insights-list"></div>
   </div>
 
-  <!-- ════════════════════════════════════════
-       SCREEN: SETTINGS
-  ════════════════════════════════════════ -->
+  <!-- PARAMÈTRES -->
   <div class="screen" id="screen-settings">
     <div class="app-header">
       <span class="header-title" id="h-settings">Paramètres</span>
     </div>
     <div class="settings-list">
-
       <div class="settings-section-title" id="s-lang-title">Langue</div>
       <div class="settings-card">
         <div class="settings-row">
           <div class="settings-row-left">
             <div class="settings-row-icon">🌍</div>
-            <div class="settings-row-text">
-              <div class="settings-row-label" id="s-lang-label">Langue</div>
-            </div>
+            <div class="settings-row-label" id="s-lang-label">Langue</div>
           </div>
           <select class="settings-select" id="lang-select" onchange="changeLang(this.value)">
             <option value="fr">🇫🇷 Français</option>
@@ -1082,12 +314,10 @@
 
       <div class="settings-section-title" id="s-theme-title">Thème</div>
       <div class="settings-card">
-        <div class="settings-row toggle-row">
+        <div class="settings-row" style="cursor:default">
           <div class="settings-row-left">
             <div class="settings-row-icon">🌙</div>
-            <div class="settings-row-text">
-              <div class="settings-row-label" id="s-theme-label">Thème</div>
-            </div>
+            <div class="settings-row-label" id="s-theme-label">Thème</div>
           </div>
           <div class="segmented">
             <button class="seg-btn active" id="seg-system" onclick="setTheme('system')">Auto</button>
@@ -1097,104 +327,50 @@
         </div>
       </div>
 
-      <div class="settings-section-title" id="s-api-title">API Claude</div>
-      <div class="settings-card">
-        <div class="settings-row" onclick="openApiModal()">
-          <div class="settings-row-left">
-            <div class="settings-row-icon">🔑</div>
-            <div class="settings-row-text">
-              <div class="settings-row-label" id="s-api-label">Clé API Anthropic</div>
-              <div class="settings-row-sub" id="api-key-status-text">Non configurée</div>
-            </div>
-          </div>
-          <div class="settings-row-right">
-            <div class="api-status" id="api-status-dot">
-              <div class="api-dot" id="api-dot"></div>
-            </div>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-          </div>
-        </div>
-      </div>
-
       <div class="settings-section-title" id="s-data-title">Données</div>
       <div class="settings-card">
         <div class="settings-row" onclick="exportData()">
           <div class="settings-row-left">
             <div class="settings-row-icon sage">📤</div>
-            <div class="settings-row-text">
-              <div class="settings-row-label" id="s-export-label">Exporter (JSON)</div>
-            </div>
+            <div class="settings-row-label" id="s-export-label">Exporter (JSON)</div>
           </div>
-          <svg class="settings-row-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;color:var(--ink-muted)"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg class="settings-row-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
         <div class="settings-row" onclick="confirmDeleteAll()">
           <div class="settings-row-left">
             <div class="settings-row-icon danger">🗑️</div>
-            <div class="settings-row-text">
-              <div class="settings-row-label" style="color:var(--error)" id="s-delete-label">Supprimer tout</div>
-            </div>
+            <div class="settings-row-label" style="color:var(--error)" id="s-delete-label">Supprimer tout</div>
           </div>
-          <svg class="settings-row-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;color:var(--ink-muted)"><polyline points="9 18 15 12 9 6"/></svg>
+          <svg class="settings-row-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
       </div>
-
-      <div style="padding: 24px 0 8px; text-align:center;">
-        <div style="font-size:12px;color:var(--ink-muted)">Diário IA v1.0 · Made with ♥</div>
-      </div>
+      <div style="padding:24px 0 8px;text-align:center;font-size:12px;color:var(--ink-muted)">Diário IA v1.0 · Made with ♥</div>
     </div>
   </div>
 
-  <!-- ════════════════════════════════════════
-       BOTTOM NAVIGATION
-  ════════════════════════════════════════ -->
+  <!-- NAV BAS -->
   <nav class="bottom-nav" id="bottom-nav">
     <button class="nav-item active" id="nav-journal" onclick="showScreen('journal')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
       <span id="nav-j-label">Journal</span>
     </button>
     <button class="nav-item" id="nav-insights" onclick="showScreen('insights')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       <span id="nav-i-label">Historique</span>
     </button>
     <button class="nav-item" id="nav-settings" onclick="showScreen('settings')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
       <span id="nav-s-label">Réglages</span>
     </button>
   </nav>
-
-</div><!-- /app -->
-
-<!-- ════════════════════════════════════════
-     MODAL: API KEY
-════════════════════════════════════════ -->
-<div class="modal-overlay" id="modal-api" onclick="closeModalIfOutside(event, 'modal-api')">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <h3 class="modal-title" id="modal-api-title">Clé API Anthropic</h3>
-    <p class="modal-sub" id="modal-api-sub">Stockée localement dans votre navigateur. Jamais envoyée à nos serveurs.</p>
-    <div class="form-group">
-      <label class="form-label" id="modal-api-label">Clé API</label>
-      <input class="form-input" type="password" id="modal-api-input" placeholder="sk-ant-..." />
-    </div>
-    <div style="display:flex;gap:10px;margin-top:8px">
-      <button class="btn btn-ghost" style="flex:0 0 auto" onclick="deleteApiKey()" id="modal-api-delete">Supprimer</button>
-      <button class="btn btn-accent btn-full" onclick="saveApiKeyFromModal()" id="modal-api-save">Enregistrer</button>
-    </div>
-  </div>
 </div>
 
-<!-- MODAL: CONFIRM DELETE ALL -->
-<div class="modal-overlay" id="modal-delete" onclick="closeModalIfOutside(event, 'modal-delete')">
+<!-- MODAL SUPPRIMER TOUT -->
+<div class="modal-overlay" id="modal-delete" onclick="closeModalIfOutside(event,'modal-delete')">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <h3 class="modal-title" id="modal-del-title">Supprimer tout ?</h3>
-    <p class="modal-sub" id="modal-del-body">Cette action supprimera définitivement toutes vos entrées de journal et vos paramètres. Elle est irréversible.</p>
+    <p class="modal-sub" id="modal-del-body">Cette action supprimera définitivement toutes vos entrées. Elle est irréversible.</p>
     <div style="display:flex;gap:10px">
       <button class="btn btn-ghost btn-full" onclick="closeModal('modal-delete')" id="modal-del-cancel">Annuler</button>
       <button class="btn btn-danger btn-full" onclick="deleteAllData()" id="modal-del-confirm">Supprimer</button>
@@ -1202,734 +378,278 @@
   </div>
 </div>
 
-<!-- TOAST CONTAINER -->
+<!-- TOASTS -->
 <div class="toast-container" id="toast-container"></div>
 
 <script>
-/* ═══════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════ */
-const STATE = {
-  lang: 'fr',
-  theme: 'system',
-  apiKey: '',
-  entries: [],
-  lastAnalysis: null,
-  currentScreen: 'onboarding',
-};
-
-/* ═══════════════════════════════════════════
-   I18N — 3 langues
-═══════════════════════════════════════════ */
+/* ── TRADUCTIONS ── */
 const T = {
   fr: {
-    appName: 'Diário IA',
-    journalTitle: 'Journal du jour',
-    journalPlaceholder: "Qu'est-ce qui vous traverse l'esprit aujourd'hui ? Écrivez librement, sans jugement…",
-    analyzeBtn: 'Analyser avec l\'IA',
-    analyzing: 'Analyse en cours…',
-    backLabel: 'Retour au journal',
-    insightsTitle: 'Mon journal',
-    settingsTitle: 'Paramètres',
-    navJournal: 'Journal',
-    navHistory: 'Historique',
-    navSettings: 'Réglages',
-    saved: 'Entrée enregistrée ✓',
-    noText: 'Écrivez quelque chose d\'abord.',
-    noKey: '🔑 Ajoutez votre clé API dans Paramètres.',
-    errNetwork: 'Erreur réseau. Vérifiez votre connexion.',
-    errGeneric: 'Une erreur s\'est produite.',
-    errParse: 'Réponse IA invalide. Réessayez.',
-    moodLabel: 'Humeur détectée',
-    patternsLabel: 'Patterns',
-    questionsLabel: 'Questions profondes',
-    reframingLabel: 'Recadrage positif',
-    microLabel: 'Micro-action du jour',
-    newEntry: 'Nouvelle entrée',
-    emptyTitle: 'Aucune entrée',
-    emptySub: 'Commencez à écrire aujourd\'hui pour voir votre journal s\'enrichir.',
-    sLangTitle: 'Langue',
-    sThemeTitle: 'Thème',
-    sApiTitle: 'API Claude',
-    sDataTitle: 'Données',
-    sExport: 'Exporter (JSON)',
-    sDelete: 'Supprimer tout',
-    apiConfigured: 'Configurée ✓',
-    apiNotConfigured: 'Non configurée',
-    modalApiTitle: 'Clé API Anthropic',
-    modalApiSub: 'Stockée localement dans votre navigateur. Jamais envoyée à nos serveurs.',
-    modalApiLabel: 'Clé API',
-    modalApiSave: 'Enregistrer',
-    modalApiDel: 'Supprimer',
-    modalDelTitle: 'Supprimer tout ?',
-    modalDelBody: 'Cette action supprimera définitivement toutes vos entrées de journal. Elle est irréversible.',
-    modalDelCancel: 'Annuler',
-    modalDelConfirm: 'Supprimer',
-    deleted: 'Toutes les données supprimées',
-    exported: 'Export téléchargé ✓',
-    keySaved: 'Clé API enregistrée ✓',
-    keyDeleted: 'Clé API supprimée',
-    wordCount: (n) => n === 0 ? '' : n === 1 ? '1 mot' : `${n} mots`,
-    obSub0: 'Votre journal intime intelligent et 100% privé. Écrivez librement — vos pensées restent sur votre appareil.',
-    obTitle1: 'Votre vie privée',
-    obSub2: 'Nécessaire pour l\'analyse IA. Obtenez une clé gratuitement sur console.anthropic.com',
-    obKeyLabel: 'Votre clé API (optionnel)',
-    obBtn0: 'Commencer →',
-    obBtn1: 'J\'ai compris ✓',
-    obBtn2: 'Commencer le journal →',
-    obSkip: 'Passer pour l\'instant',
-    pr1: 'Tout est stocké localement sur votre appareil. Aucun serveur, aucun compte.',
-    pr2: 'Votre clé API Anthropic est chiffrée dans votre navigateur et jamais partagée.',
-    pr3: 'L\'analyse IA envoie votre texte directement à Anthropic via HTTPS — sans intermédiaire.',
+    journalTitle:'Journal du jour', journalPlaceholder:"Qu'est-ce qui vous traverse l'esprit aujourd'hui ? Écrivez librement, sans jugement…",
+    analyzeBtn:"Analyser avec l'IA", analyzing:'Analyse en cours…', backLabel:'Retour au journal',
+    insightsTitle:'Mon journal', settingsTitle:'Paramètres',
+    navJournal:'Journal', navHistory:'Historique', navSettings:'Réglages',
+    saved:'Entrée enregistrée ✓', noText:'Écrivez quelque chose d\'abord.',
+    errNetwork:'Erreur réseau. Vérifiez votre connexion.', errGeneric:'Une erreur s\'est produite. Réessayez.',
+    moodLabel:'Humeur détectée', patternsLabel:'Patterns', questionsLabel:'Questions profondes',
+    reframingLabel:'Recadrage positif', microLabel:'Micro-action du jour',
+    emptyTitle:'Aucune entrée', emptySub:'Commencez à écrire aujourd\'hui !',
+    sLangTitle:'Langue', sThemeTitle:'Thème', sDataTitle:'Données',
+    sExport:'Exporter (JSON)', sDelete:'Supprimer tout',
+    modalDelTitle:'Supprimer tout ?', modalDelBody:'Cette action supprimera définitivement toutes vos entrées. Elle est irréversible.',
+    modalDelCancel:'Annuler', modalDelConfirm:'Supprimer',
+    deleted:'Toutes les données supprimées', exported:'Export téléchargé ✓',
+    wordCount:(n)=>n===0?'':n===1?'1 mot':`${n} mots`,
+    obSub0:'Votre journal intime intelligent et 100% privé.',
+    obTitle1:'Votre vie privée', obTitle2:'Tout est prêt !',
+    obSub2:"L'analyse IA est incluse — commencez à écrire dès maintenant.",
+    obBtn0:'Commencer →', obBtn1:'J\'ai compris ✓', obBtn2:'Commencer le journal →',
+    pr1:'Tout est stocké localement sur votre appareil. Aucun serveur, aucun compte.',
+    pr2:"L'analyse IA est incluse — aucune clé API requise de votre part.",
+    pr3:'Vos entrées ne sont jamais lues ni stockées par nous.',
   },
   en: {
-    appName: 'Diário IA',
-    journalTitle: 'Today\'s journal',
-    journalPlaceholder: "What's on your mind today? Write freely, without judgment…",
-    analyzeBtn: 'Analyze with AI',
-    analyzing: 'Analyzing…',
-    backLabel: 'Back to journal',
-    insightsTitle: 'My journal',
-    settingsTitle: 'Settings',
-    navJournal: 'Journal',
-    navHistory: 'History',
-    navSettings: 'Settings',
-    saved: 'Entry saved ✓',
-    noText: 'Write something first.',
-    noKey: '🔑 Add your API key in Settings.',
-    errNetwork: 'Network error. Check your connection.',
-    errGeneric: 'Something went wrong.',
-    errParse: 'Invalid AI response. Try again.',
-    moodLabel: 'Detected mood',
-    patternsLabel: 'Patterns',
-    questionsLabel: 'Deep questions',
-    reframingLabel: 'Positive reframing',
-    microLabel: 'Micro-action for today',
-    newEntry: 'New entry',
-    emptyTitle: 'No entries yet',
-    emptySub: 'Start writing today to build your journal.',
-    sLangTitle: 'Language',
-    sThemeTitle: 'Theme',
-    sApiTitle: 'Claude API',
-    sDataTitle: 'Data',
-    sExport: 'Export (JSON)',
-    sDelete: 'Delete everything',
-    apiConfigured: 'Configured ✓',
-    apiNotConfigured: 'Not configured',
-    modalApiTitle: 'Anthropic API Key',
-    modalApiSub: 'Stored locally in your browser. Never sent to our servers.',
-    modalApiLabel: 'API Key',
-    modalApiSave: 'Save',
-    modalApiDel: 'Delete',
-    modalDelTitle: 'Delete everything?',
-    modalDelBody: 'This will permanently delete all your journal entries. This cannot be undone.',
-    modalDelCancel: 'Cancel',
-    modalDelConfirm: 'Delete',
-    deleted: 'All data deleted',
-    exported: 'Export downloaded ✓',
-    keySaved: 'API key saved ✓',
-    keyDeleted: 'API key deleted',
-    wordCount: (n) => n === 0 ? '' : n === 1 ? '1 word' : `${n} words`,
-    obSub0: 'Your intelligent, 100% private journal. Write freely — your thoughts stay on your device.',
-    obTitle1: 'Your privacy matters',
-    obSub2: 'Required for AI analysis. Get a free key at console.anthropic.com',
-    obKeyLabel: 'Your API key (optional)',
-    obBtn0: 'Get started →',
-    obBtn1: 'I understand ✓',
-    obBtn2: 'Start journaling →',
-    obSkip: 'Skip for now',
-    pr1: 'Everything is stored locally on your device. No server, no account.',
-    pr2: 'Your Anthropic API key is encrypted in your browser and never shared.',
-    pr3: 'AI analysis sends your text directly to Anthropic via HTTPS — no middleman.',
+    journalTitle:"Today's journal", journalPlaceholder:"What's on your mind today? Write freely, without judgment…",
+    analyzeBtn:'Analyze with AI', analyzing:'Analyzing…', backLabel:'Back to journal',
+    insightsTitle:'My journal', settingsTitle:'Settings',
+    navJournal:'Journal', navHistory:'History', navSettings:'Settings',
+    saved:'Entry saved ✓', noText:'Write something first.',
+    errNetwork:'Network error. Check your connection.', errGeneric:'Something went wrong. Try again.',
+    moodLabel:'Detected mood', patternsLabel:'Patterns', questionsLabel:'Deep questions',
+    reframingLabel:'Positive reframing', microLabel:'Micro-action for today',
+    emptyTitle:'No entries yet', emptySub:'Start writing today!',
+    sLangTitle:'Language', sThemeTitle:'Theme', sDataTitle:'Data',
+    sExport:'Export (JSON)', sDelete:'Delete everything',
+    modalDelTitle:'Delete everything?', modalDelBody:'This will permanently delete all your entries. This cannot be undone.',
+    modalDelCancel:'Cancel', modalDelConfirm:'Delete',
+    deleted:'All data deleted', exported:'Export downloaded ✓',
+    wordCount:(n)=>n===0?'':n===1?'1 word':`${n} words`,
+    obSub0:'Your intelligent, 100% private journal.',
+    obTitle1:'Your privacy', obTitle2:'All set!',
+    obSub2:'AI analysis is included — start writing right now.',
+    obBtn0:'Get started →', obBtn1:'I understand ✓', obBtn2:'Start journaling →',
+    pr1:'Everything is stored locally on your device. No server, no account.',
+    pr2:'AI analysis is included — no API key required from you.',
+    pr3:'Your entries are never read or stored by us.',
   },
   pt: {
-    appName: 'Diário IA',
-    journalTitle: 'Diário de hoje',
-    journalPlaceholder: "O que está passando pela sua mente hoje? Escreva livremente, sem julgamentos…",
-    analyzeBtn: 'Analisar com IA',
-    analyzing: 'Analisando…',
-    backLabel: 'Voltar ao diário',
-    insightsTitle: 'Meu diário',
-    settingsTitle: 'Configurações',
-    navJournal: 'Diário',
-    navHistory: 'Histórico',
-    navSettings: 'Ajustes',
-    saved: 'Entrada salva ✓',
-    noText: 'Escreva algo primeiro.',
-    noKey: '🔑 Adicione sua chave API nas Configurações.',
-    errNetwork: 'Erro de rede. Verifique sua conexão.',
-    errGeneric: 'Algo deu errado.',
-    errParse: 'Resposta inválida. Tente novamente.',
-    moodLabel: 'Humor detectado',
-    patternsLabel: 'Padrões',
-    questionsLabel: 'Perguntas profundas',
-    reframingLabel: 'Recadramento positivo',
-    microLabel: 'Micro-ação de hoje',
-    newEntry: 'Nova entrada',
-    emptyTitle: 'Nenhuma entrada',
-    emptySub: 'Comece a escrever hoje para construir seu diário.',
-    sLangTitle: 'Idioma',
-    sThemeTitle: 'Tema',
-    sApiTitle: 'API Claude',
-    sDataTitle: 'Dados',
-    sExport: 'Exportar (JSON)',
-    sDelete: 'Apagar tudo',
-    apiConfigured: 'Configurada ✓',
-    apiNotConfigured: 'Não configurada',
-    modalApiTitle: 'Chave API Anthropic',
-    modalApiSub: 'Armazenada localmente no seu navegador. Nunca enviada a nossos servidores.',
-    modalApiLabel: 'Chave API',
-    modalApiSave: 'Salvar',
-    modalApiDel: 'Excluir',
-    modalDelTitle: 'Apagar tudo?',
-    modalDelBody: 'Isso excluirá permanentemente todas as suas entradas de diário. Essa ação não pode ser desfeita.',
-    modalDelCancel: 'Cancelar',
-    modalDelConfirm: 'Apagar',
-    deleted: 'Todos os dados apagados',
-    exported: 'Exportação baixada ✓',
-    keySaved: 'Chave API salva ✓',
-    keyDeleted: 'Chave API excluída',
-    wordCount: (n) => n === 0 ? '' : n === 1 ? '1 palavra' : `${n} palavras`,
-    obSub0: 'Seu diário inteligente e 100% privado. Escreva livremente — seus pensamentos ficam no seu dispositivo.',
-    obTitle1: 'Sua privacidade importa',
-    obSub2: 'Necessária para análise de IA. Obtenha uma chave grátis em console.anthropic.com',
-    obKeyLabel: 'Sua chave API (opcional)',
-    obBtn0: 'Começar →',
-    obBtn1: 'Entendi ✓',
-    obBtn2: 'Começar o diário →',
-    obSkip: 'Pular por agora',
-    pr1: 'Tudo é armazenado localmente no seu dispositivo. Sem servidor, sem conta.',
-    pr2: 'Sua chave API Anthropic é criptografada no navegador e nunca compartilhada.',
-    pr3: 'A análise de IA envia seu texto diretamente à Anthropic via HTTPS — sem intermediário.',
+    journalTitle:'Diário de hoje', journalPlaceholder:"O que está passando pela sua mente? Escreva livremente, sem julgamentos…",
+    analyzeBtn:'Analisar com IA', analyzing:'Analisando…', backLabel:'Voltar ao diário',
+    insightsTitle:'Meu diário', settingsTitle:'Configurações',
+    navJournal:'Diário', navHistory:'Histórico', navSettings:'Ajustes',
+    saved:'Entrada salva ✓', noText:'Escreva algo primeiro.',
+    errNetwork:'Erro de rede. Verifique sua conexão.', errGeneric:'Algo deu errado. Tente novamente.',
+    moodLabel:'Humor detectado', patternsLabel:'Padrões', questionsLabel:'Perguntas profundas',
+    reframingLabel:'Recadramento positivo', microLabel:'Micro-ação de hoje',
+    emptyTitle:'Nenhuma entrada', emptySub:'Comece a escrever hoje!',
+    sLangTitle:'Idioma', sThemeTitle:'Tema', sDataTitle:'Dados',
+    sExport:'Exportar (JSON)', sDelete:'Apagar tudo',
+    modalDelTitle:'Apagar tudo?', modalDelBody:'Isso apagará permanentemente todas as suas entradas. Não pode ser desfeito.',
+    modalDelCancel:'Cancelar', modalDelConfirm:'Apagar',
+    deleted:'Todos os dados apagados', exported:'Exportação baixada ✓',
+    wordCount:(n)=>n===0?'':n===1?'1 palavra':`${n} palavras`,
+    obSub0:'Seu diário inteligente e 100% privado.',
+    obTitle1:'Sua privacidade', obTitle2:'Tudo pronto!',
+    obSub2:'A análise de IA está incluída — comece a escrever agora.',
+    obBtn0:'Começar →', obBtn1:'Entendi ✓', obBtn2:'Começar o diário →',
+    pr1:'Tudo é armazenado localmente no seu dispositivo. Sem servidor, sem conta.',
+    pr2:'A análise de IA está incluída — nenhuma chave API necessária.',
+    pr3:'Suas entradas nunca são lidas nem armazenadas por nós.',
   }
 };
 
-const t = (key) => T[STATE.lang][key] || key;
+/* ── ÉTAT ── */
+const S = {
+  lang: localStorage.getItem('d_lang') || 'fr',
+  theme: localStorage.getItem('d_theme') || 'system',
+  entries: JSON.parse(localStorage.getItem('d_entries') || '[]'),
+  lastAnalysis: null,
+};
 
-/* ═══════════════════════════════════════════
-   PERSISTENCE (localStorage)
-═══════════════════════════════════════════ */
-function loadState() {
-  try {
-    STATE.lang = localStorage.getItem('diario_lang') || 'fr';
-    STATE.theme = localStorage.getItem('diario_theme') || 'system';
-    STATE.apiKey = localStorage.getItem('diario_api_key') || '';
-    const saved = localStorage.getItem('diario_entries');
-    STATE.entries = saved ? JSON.parse(saved) : [];
-  } catch(e) { /* ignore */ }
+const t = k => T[S.lang][k] || k;
+
+/* ── THÈME ── */
+function applyTheme(p) {
+  const r = document.documentElement;
+  if (p==='dark') r.setAttribute('data-theme','dark');
+  else if (p==='light') r.removeAttribute('data-theme');
+  else window.matchMedia('(prefers-color-scheme: dark)').matches ? r.setAttribute('data-theme','dark') : r.removeAttribute('data-theme');
+  ['system','light','dark'].forEach(v => { const b=document.getElementById(`seg-${v}`); if(b) b.classList.toggle('active',v===p); });
 }
+function setTheme(v) { S.theme=v; localStorage.setItem('d_theme',v); applyTheme(v); }
 
-function saveEntriesToStorage() {
-  try { localStorage.setItem('diario_entries', JSON.stringify(STATE.entries)); } catch(e){}
-}
-
-function saveLang(l) { STATE.lang = l; try { localStorage.setItem('diario_lang', l); } catch(e){} }
-function saveThemePref(t) { STATE.theme = t; try { localStorage.setItem('diario_theme', t); } catch(e){} }
-function saveApiKey(k) { STATE.apiKey = k; try { localStorage.setItem('diario_api_key', k); } catch(e){} }
-function isOnboardingDone() { try { return !!localStorage.getItem('diario_onboarded'); } catch(e){ return false; } }
-function setOnboardingDone() { try { localStorage.setItem('diario_onboarded', '1'); } catch(e){} }
-
-/* ═══════════════════════════════════════════
-   THEME
-═══════════════════════════════════════════ */
-function applyTheme(pref) {
-  const root = document.documentElement;
-  if (pref === 'dark') { root.setAttribute('data-theme', 'dark'); }
-  else if (pref === 'light') { root.removeAttribute('data-theme'); }
-  else {
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      root.setAttribute('data-theme', 'dark');
-    } else {
-      root.removeAttribute('data-theme');
-    }
-  }
-  ['seg-system','seg-light','seg-dark'].forEach(id => {
-    const btn = document.getElementById(id);
-    if (btn) btn.classList.toggle('active', id === `seg-${pref}`);
-  });
-}
-
-function setTheme(t) {
-  saveThemePref(t);
-  applyTheme(t);
-}
-
-/* ═══════════════════════════════════════════
-   UI UPDATES (i18n)
-═══════════════════════════════════════════ */
+/* ── UI ── */
+function set(id,v) { const e=document.getElementById(id); if(e) e.textContent=v; }
 function updateUI() {
-  // Onboarding
-  setTextById('ob-sub-0', t('obSub0'));
-  setTextById('ob-title-1', t('obTitle1'));
-  setTextById('ob-sub-2', t('obSub2'));
-  setTextById('ob-key-label', t('obKeyLabel'));
-  setTextById('ob-btn-0', t('obBtn0'));
-  setTextById('ob-btn-1', t('obBtn1'));
-  setTextById('ob-btn-2', t('obBtn2'));
-  setTextById('ob-skip', t('obSkip'));
-  setTextById('pr-1', t('pr1'));
-  setTextById('pr-2', t('pr2'));
-  setTextById('pr-3', t('pr3'));
-
-  // Headers
-  setTextById('h-journal', t('journalTitle'));
-  setTextById('h-insights', t('insightsTitle'));
-  setTextById('h-settings', t('settingsTitle'));
-  setTextById('back-label', t('backLabel'));
-
-  // Nav
-  setTextById('nav-j-label', t('navJournal'));
-  setTextById('nav-i-label', t('navHistory'));
-  setTextById('nav-s-label', t('navSettings'));
-
-  // Journal
-  const ta = document.getElementById('journal-text');
-  if (ta) ta.placeholder = t('journalPlaceholder');
-  setTextById('analyze-label', t('analyzeBtn'));
-
-  // Settings
-  setTextById('s-lang-title', t('sLangTitle'));
-  setTextById('s-lang-label', t('sLangTitle'));
-  setTextById('s-theme-title', t('sThemeTitle'));
-  setTextById('s-theme-label', t('sThemeTitle'));
-  setTextById('s-api-title', t('sApiTitle'));
-  setTextById('s-api-label', t('sApiTitle'));
-  setTextById('s-data-title', t('sDataTitle'));
-  setTextById('s-export-label', t('sExport'));
-  setTextById('s-delete-label', t('sDelete'));
-
-  // API status
-  const hasKey = !!STATE.apiKey;
-  setTextById('api-key-status-text', hasKey ? t('apiConfigured') : t('apiNotConfigured'));
-  const dot = document.getElementById('api-dot');
-  if (dot) dot.classList.toggle('ok', hasKey);
-
-  // Lang select
-  const ls = document.getElementById('lang-select');
-  if (ls) ls.value = STATE.lang;
-
-  // Modals
-  setTextById('modal-api-title', t('modalApiTitle'));
-  setTextById('modal-api-sub', t('modalApiSub'));
-  setTextById('modal-api-label', t('modalApiLabel'));
-  setTextById('modal-api-save', t('modalApiSave'));
-  setTextById('modal-api-delete', t('modalApiDel'));
-  setTextById('modal-del-title', t('modalDelTitle'));
-  setTextById('modal-del-body', t('modalDelBody'));
-  setTextById('modal-del-cancel', t('modalDelCancel'));
-  setTextById('modal-del-confirm', t('modalDelConfirm'));
-
-  // Date
+  set('h-journal',t('journalTitle')); set('h-insights',t('insightsTitle')); set('h-settings',t('settingsTitle'));
+  set('back-label',t('backLabel')); set('nav-j-label',t('navJournal')); set('nav-i-label',t('navHistory')); set('nav-s-label',t('navSettings'));
+  set('s-lang-title',t('sLangTitle')); set('s-lang-label',t('sLangTitle')); set('s-theme-title',t('sThemeTitle')); set('s-theme-label',t('sThemeTitle'));
+  set('s-data-title',t('sDataTitle')); set('s-export-label',t('sExport')); set('s-delete-label',t('sDelete'));
+  set('modal-del-title',t('modalDelTitle')); set('modal-del-body',t('modalDelBody'));
+  set('modal-del-cancel',t('modalDelCancel')); set('modal-del-confirm',t('modalDelConfirm'));
+  set('ob-sub-0',t('obSub0')); set('ob-title-1',t('obTitle1')); set('ob-title-2',t('obTitle2')); set('ob-sub-2',t('obSub2'));
+  set('ob-btn-0',t('obBtn0')); set('ob-btn-1',t('obBtn1')); set('ob-btn-2',t('obBtn2'));
+  set('pr-1',t('pr1')); set('pr-2',t('pr2')); set('pr-3',t('pr3'));
+  set('analyze-label',t('analyzeBtn'));
+  const ta=document.getElementById('journal-text'); if(ta) ta.placeholder=t('journalPlaceholder');
+  const ls=document.getElementById('lang-select'); if(ls) ls.value=S.lang;
   setJournalDate();
 }
-
-function setTextById(id, text) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = text;
-}
-
 function setJournalDate() {
-  const el = document.getElementById('journal-date');
-  if (!el) return;
-  const now = new Date();
-  const opts = { weekday: 'long', day: 'numeric', month: 'long' };
-  const loc = STATE.lang === 'pt' ? 'pt-BR' : STATE.lang === 'en' ? 'en-US' : 'fr-FR';
-  el.textContent = now.toLocaleDateString(loc, opts);
+  const e=document.getElementById('journal-date'); if(!e) return;
+  const loc=S.lang==='pt'?'pt-BR':S.lang==='en'?'en-US':'fr-FR';
+  e.textContent=new Date().toLocaleDateString(loc,{weekday:'long',day:'numeric',month:'long'});
 }
 
-/* ═══════════════════════════════════════════
-   SCREEN MANAGEMENT
-═══════════════════════════════════════════ */
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const screen = document.getElementById(`screen-${name}`);
-  if (screen) screen.classList.add('active');
-  STATE.currentScreen = name;
-
-  // Show/hide nav
-  const nav = document.getElementById('bottom-nav');
-  const showNav = ['journal','insights','settings','analysis'].includes(name);
-  nav.classList.toggle('visible', showNav);
-
-  // Active nav item
-  ['journal','insights','settings'].forEach(n => {
-    const item = document.getElementById(`nav-${n}`);
-    if (item) item.classList.toggle('active', n === name);
-  });
-
-  // Load screen content
-  if (name === 'insights') renderInsights();
-  if (name === 'settings') applyTheme(STATE.theme);
+/* ── ÉCRANS ── */
+function showScreen(n) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(`screen-${n}`)?.classList.add('active');
+  document.getElementById('bottom-nav').classList.toggle('visible',['journal','insights','settings','analysis'].includes(n));
+  ['journal','insights','settings'].forEach(x=>document.getElementById(`nav-${x}`)?.classList.toggle('active',x===n));
+  if(n==='insights') renderInsights();
 }
 
-/* ═══════════════════════════════════════════
-   ONBOARDING
-═══════════════════════════════════════════ */
-let obCurrentStep = 0;
-
+/* ── ONBOARDING ── */
+let obStep=0;
 function selectLang(code) {
-  STATE.lang = code;
-  document.querySelectorAll('.lang-option').forEach(el => {
-    el.classList.toggle('selected', el.dataset.lang === code);
-  });
+  S.lang=code; localStorage.setItem('d_lang',code);
+  document.querySelectorAll('.lang-option').forEach(el=>el.classList.toggle('selected',el.dataset.lang===code));
   updateUI();
 }
-
-function goObStep(step) {
-  document.getElementById(`ob-step-${obCurrentStep}`).classList.remove('active');
-  obCurrentStep = step;
-  document.getElementById(`ob-step-${step}`).classList.add('active');
-  // Update dots
-  for (let i = 0; i < 3; i++) {
-    document.getElementById(`dot-${i}`).classList.toggle('done', i <= step);
-  }
+function goObStep(s) {
+  document.getElementById(`ob-step-${obStep}`).classList.remove('active');
+  obStep=s;
+  document.getElementById(`ob-step-${s}`).classList.add('active');
+  for(let i=0;i<3;i++) document.getElementById(`dot-${i}`).classList.toggle('done',i<=s);
 }
-
 function finishOnboarding() {
-  saveLang(STATE.lang);
-  const keyInput = document.getElementById('ob-api-key');
-  if (keyInput && keyInput.value.trim()) {
-    saveApiKey(keyInput.value.trim());
-  }
-  setOnboardingDone();
+  localStorage.setItem('d_onboarded','1');
   updateUI();
   showScreen('journal');
 }
 
-/* ═══════════════════════════════════════════
-   JOURNAL
-═══════════════════════════════════════════ */
+/* ── JOURNAL ── */
 function onJournalInput() {
-  const text = document.getElementById('journal-text').value;
-  const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
-  setTextById('word-count', t('wordCount')(words));
+  const txt=document.getElementById('journal-text').value;
+  const w=txt.trim()===''?0:txt.trim().split(/\s+/).length;
+  set('word-count',t('wordCount')(w));
 }
-
 function saveEntry() {
-  const text = document.getElementById('journal-text').value.trim();
-  if (!text) { showToast(t('noText'), true); return; }
-  const entry = {
-    id: Date.now().toString(),
-    content: text,
-    createdAt: new Date().toISOString(),
-    analysis: null,
-  };
-  STATE.entries.unshift(entry);
-  saveEntriesToStorage();
-  document.getElementById('journal-text').value = '';
-  onJournalInput();
+  const txt=document.getElementById('journal-text').value.trim();
+  if(!txt){showToast(t('noText'),true);return;}
+  S.entries.unshift({id:Date.now().toString(),content:txt,createdAt:new Date().toISOString(),analysis:null});
+  localStorage.setItem('d_entries',JSON.stringify(S.entries));
+  document.getElementById('journal-text').value=''; onJournalInput();
   showToast(t('saved'));
 }
 
-/* ═══════════════════════════════════════════
-   CLAUDE API CALL
-═══════════════════════════════════════════ */
+/* ── ANALYSE ── */
 async function analyzeEntry() {
-  const text = document.getElementById('journal-text').value.trim();
-  if (text.length < 20) { showToast(t('noText'), true); return; }
-  if (!STATE.apiKey) { showToast(t('noKey'), true); return; }
-
-  const btn = document.getElementById('btn-analyze');
-  const label = document.getElementById('analyze-label');
-  btn.disabled = true;
-  label.textContent = t('analyzing');
-  btn.innerHTML = `<div class="spinner"></div><span>${t('analyzing')}</span>`;
-
-  const systemPrompt = buildSystemPrompt();
-  const userMsg = `Voici l'entrée de journal :\n\n---\n${text}\n---\n\nRéponds UNIQUEMENT avec un objet JSON valide, aucun texte en dehors.`;
-
+  const txt=document.getElementById('journal-text').value.trim();
+  if(txt.length<20){showToast(t('noText'),true);return;}
+  const btn=document.getElementById('btn-analyze');
+  btn.disabled=true;
+  btn.innerHTML=`<div class="spinner"></div><span>${t('analyzing')}</span>`;
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': STATE.apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userMsg }],
-      }),
+    const res=await fetch('/api/analyze',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({text:txt,lang:S.lang}),
     });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err?.error?.message || t('errGeneric'));
-    }
-
-    const data = await res.json();
-    const rawText = data.content?.[0]?.text || '';
-    const clean = rawText.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
-    const analysis = JSON.parse(clean);
-
-    // Save entry with analysis
-    const entry = {
-      id: Date.now().toString(),
-      content: text,
-      createdAt: new Date().toISOString(),
-      analysis,
-    };
-    STATE.entries.unshift(entry);
-    STATE.lastAnalysis = analysis;
-    saveEntriesToStorage();
-
-    document.getElementById('journal-text').value = '';
-    onJournalInput();
-
+    const data=await res.json();
+    if(!res.ok) throw new Error(data.error||t('errGeneric'));
+    const analysis=data.analysis;
+    const entry={id:Date.now().toString(),content:txt,createdAt:new Date().toISOString(),analysis};
+    S.entries.unshift(entry); S.lastAnalysis=analysis;
+    localStorage.setItem('d_entries',JSON.stringify(S.entries));
+    document.getElementById('journal-text').value=''; onJournalInput();
     renderAnalysis(analysis);
     showScreen('analysis');
-
-  } catch (err) {
-    let msg = t('errGeneric');
-    if (err.message?.includes('fetch') || err.message?.includes('network')) msg = t('errNetwork');
-    else if (err instanceof SyntaxError) msg = t('errParse');
-    else if (err.message) msg = err.message.length < 80 ? err.message : t('errGeneric');
-    showToast(msg, true);
+  } catch(err) {
+    const msg=err.message?.includes('fetch')?t('errNetwork'):err.message?.length<100?err.message:t('errGeneric');
+    showToast(msg,true);
   } finally {
-    btn.disabled = false;
-    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span id="analyze-label">${t('analyzeBtn')}</span>`;
+    btn.disabled=false;
+    btn.innerHTML=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span id="analyze-label">${t('analyzeBtn')}</span>`;
   }
 }
 
-function buildSystemPrompt() {
-  const lang = STATE.lang;
-  const instruction = lang === 'fr'
-    ? 'Réponds entièrement en FRANÇAIS.'
-    : lang === 'pt'
-    ? 'Responde completamente em PORTUGUÊS.'
-    : 'Reply entirely in ENGLISH.';
-
-  return `You are a compassionate, empathetic, non-judgmental AI therapeutic journal coach.
-${instruction}
-
-Analyze the journal entry and return ONLY a valid JSON object with this exact structure:
-
-{
-  "mood": "Short label for the detected mood",
-  "moodEmoji": "A single emoji representing the mood",
-  "patterns": ["Pattern observed (1-2 sentences)", "Second pattern if present"],
-  "deepQuestions": ["A thoughtful open-ended question", "A second question", "A third question"],
-  "reframing": "A gentle, positive reframing in 2-3 sentences. Acknowledge difficulty before reframing.",
-  "microAction": "One small, concrete, achievable action for today (1 sentence)."
-}
-
-Rules: patterns 1-3 items, deepQuestions exactly 3 items. Be warm, human, encouraging. Keep values concise. NO text outside the JSON.`;
-}
-
-/* ═══════════════════════════════════════════
-   RENDER ANALYSIS
-═══════════════════════════════════════════ */
+/* ── RENDU ANALYSE ── */
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function renderAnalysis(a) {
-  const container = document.getElementById('analysis-content');
-  const delay = (i) => `animation-delay:${i * 80}ms`;
-
-  container.innerHTML = `
-    <!-- Humeur -->
-    <div class="analysis-card card-paper" style="${delay(0)}">
-      <div class="card-label card-label-accent">
-        <span>✦</span> ${t('moodLabel')}
-      </div>
-      <div class="mood-display">
-        <span class="mood-emoji">${esc(a.moodEmoji)}</span>
-        <span class="mood-label">${esc(a.mood)}</span>
-      </div>
+  const d=(i)=>`animation-delay:${i*80}ms`;
+  document.getElementById('analysis-content').innerHTML=`
+    <div class="analysis-card card-paper" style="${d(0)}">
+      <div class="card-label card-label-accent">✦ ${t('moodLabel')}</div>
+      <div class="mood-display"><span class="mood-emoji">${esc(a.moodEmoji)}</span><span class="mood-label">${esc(a.mood)}</span></div>
     </div>
-
-    <!-- Patterns -->
-    ${a.patterns?.length ? `
-    <div class="analysis-card card-paper" style="${delay(1)}">
-      <div class="card-label">
-        <span>◈</span> ${t('patternsLabel')}
-      </div>
-      <div class="bullet-list">
-        ${a.patterns.map(p => `
-          <div class="bullet-item">
-            <span class="bullet-marker">•</span>
-            <span>${esc(p)}</span>
-          </div>`).join('')}
-      </div>
-    </div>` : ''}
-
-    <!-- Questions -->
-    <div class="analysis-card card-lavender" style="${delay(2)}">
-      <div class="card-label card-label-lavender">
-        <span>◇</span> ${t('questionsLabel')}
-      </div>
-      <div class="bullet-list">
-        ${(a.deepQuestions || []).map((q, i) => `
-          <div class="bullet-item">
-            <span class="bullet-marker bullet-marker-lavender">${i+1}.</span>
-            <span>${esc(q)}</span>
-          </div>`).join('')}
-      </div>
+    ${a.patterns?.length?`<div class="analysis-card card-paper" style="${d(1)}">
+      <div class="card-label">◈ ${t('patternsLabel')}</div>
+      <div class="bullet-list">${a.patterns.map(p=>`<div class="bullet-item"><span class="bullet-marker">•</span><span>${esc(p)}</span></div>`).join('')}</div>
+    </div>`:''}
+    <div class="analysis-card card-lavender" style="${d(2)}">
+      <div class="card-label card-label-lavender">◇ ${t('questionsLabel')}</div>
+      <div class="bullet-list">${(a.deepQuestions||[]).map((q,i)=>`<div class="bullet-item"><span class="bullet-marker bullet-marker-lavender">${i+1}.</span><span>${esc(q)}</span></div>`).join('')}</div>
     </div>
-
-    <!-- Reframing -->
-    <div class="analysis-card card-accent" style="${delay(3)}">
-      <div class="card-label card-label-accent">
-        <span>✿</span> ${t('reframingLabel')}
-      </div>
+    <div class="analysis-card card-accent" style="${d(3)}">
+      <div class="card-label card-label-accent">✿ ${t('reframingLabel')}</div>
       <p class="reframing-text">${esc(a.reframing)}</p>
     </div>
-
-    <!-- Micro-action -->
-    <div class="analysis-card card-sage" style="${delay(4)}">
-      <div class="card-label card-label-sage">
-        <span>▸</span> ${t('microLabel')}
-      </div>
+    <div class="analysis-card card-sage" style="${d(4)}">
+      <div class="card-label card-label-sage">▸ ${t('microLabel')}</div>
       <p class="micro-action-text">${esc(a.microAction)}</p>
-    </div>
-  `;
+    </div>`;
 }
 
-function esc(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-/* ═══════════════════════════════════════════
-   RENDER INSIGHTS
-═══════════════════════════════════════════ */
+/* ── HISTORIQUE ── */
 function renderInsights() {
-  const container = document.getElementById('insights-list');
-  if (!STATE.entries.length) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <span class="empty-icon">📔</span>
-        <div class="empty-title">${t('emptyTitle')}</div>
-        <div class="empty-sub">${t('emptySub')}</div>
-      </div>`;
+  const c=document.getElementById('insights-list');
+  if(!S.entries.length){
+    c.innerHTML=`<div class="empty-state"><span class="empty-icon">📔</span><div class="empty-title">${t('emptyTitle')}</div><div class="empty-sub">${t('emptySub')}</div></div>`;
     return;
   }
-
-  const loc = STATE.lang === 'pt' ? 'pt-BR' : STATE.lang === 'en' ? 'en-US' : 'fr-FR';
-  container.innerHTML = STATE.entries.map(e => {
-    const date = new Date(e.createdAt).toLocaleDateString(loc, {
-      day: 'numeric', month: 'short', year: 'numeric'
-    });
-    const mood = e.analysis;
-    return `
-      <div class="entry-card">
-        <div class="entry-card-top">
-          <span class="entry-date">${date}</span>
-          ${mood ? `<div class="entry-mood-badge">${esc(mood.moodEmoji)} ${esc(mood.mood)}</div>` : ''}
-        </div>
-        <div class="entry-preview">${esc(e.content)}</div>
-      </div>`;
+  const loc=S.lang==='pt'?'pt-BR':S.lang==='en'?'en-US':'fr-FR';
+  c.innerHTML=S.entries.map(e=>{
+    const d=new Date(e.createdAt).toLocaleDateString(loc,{day:'numeric',month:'short',year:'numeric'});
+    const m=e.analysis;
+    return `<div class="entry-card"><div class="entry-card-top"><span class="entry-date">${d}</span>${m?`<div class="entry-mood-badge">${esc(m.moodEmoji)} ${esc(m.mood)}</div>`:''}</div><div class="entry-preview">${esc(e.content)}</div></div>`;
   }).join('');
 }
 
-/* ═══════════════════════════════════════════
-   SETTINGS ACTIONS
-═══════════════════════════════════════════ */
-function changeLang(code) {
-  saveLang(code);
-  updateUI();
-}
-
-function openApiModal() {
-  document.getElementById('modal-api-input').value = STATE.apiKey || '';
-  openModal('modal-api');
-}
-
-function saveApiKeyFromModal() {
-  const key = document.getElementById('modal-api-input').value.trim();
-  saveApiKey(key);
-  updateUI();
-  closeModal('modal-api');
-  showToast(t('keySaved'));
-}
-
-function deleteApiKey() {
-  saveApiKey('');
-  updateUI();
-  closeModal('modal-api');
-  showToast(t('keyDeleted'));
-}
-
-function exportData() {
-  const data = JSON.stringify(STATE.entries, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `diario-ia-export-${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
+/* ── PARAMÈTRES ── */
+function changeLang(code){S.lang=code;localStorage.setItem('d_lang',code);updateUI();}
+function exportData(){
+  const blob=new Blob([JSON.stringify(S.entries,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`diario-ia-${new Date().toISOString().slice(0,10)}.json`;a.click();
   showToast(t('exported'));
 }
+function confirmDeleteAll(){openModal('modal-delete');}
+function deleteAllData(){S.entries=[];localStorage.setItem('d_entries','[]');closeModal('modal-delete');showToast(t('deleted'));renderInsights();}
 
-function confirmDeleteAll() {
-  openModal('modal-delete');
-}
+/* ── MODALS ── */
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function closeModalIfOutside(e,id){if(e.target===document.getElementById(id))closeModal(id);}
 
-function deleteAllData() {
-  STATE.entries = [];
-  saveEntriesToStorage();
-  closeModal('modal-delete');
-  showToast(t('deleted'));
-  renderInsights();
-}
-
-/* ═══════════════════════════════════════════
-   MODALS
-═══════════════════════════════════════════ */
-function openModal(id) {
-  document.getElementById(id).classList.add('open');
-}
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-}
-function closeModalIfOutside(e, id) {
-  if (e.target === document.getElementById(id)) closeModal(id);
+/* ── TOAST ── */
+function showToast(msg,isErr=false){
+  const c=document.getElementById('toast-container');
+  const t=document.createElement('div');
+  t.className='toast'+(isErr?' error':'');t.textContent=msg;
+  c.appendChild(t);setTimeout(()=>t.remove(),3200);
 }
 
-/* ═══════════════════════════════════════════
-   TOAST
-═══════════════════════════════════════════ */
-function showToast(msg, isError = false) {
-  const container = document.getElementById('toast-container');
-  const toast = document.createElement('div');
-  toast.className = 'toast' + (isError ? ' error' : '');
-  toast.textContent = msg;
-  container.appendChild(toast);
-  setTimeout(() => toast.remove(), 3100);
-}
-
-/* ═══════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════ */
-function init() {
-  loadState();
-  applyTheme(STATE.theme);
+/* ── INIT ── */
+function init(){
+  applyTheme(S.theme);
   updateUI();
-
-  // Pre-select lang in onboarding
-  document.querySelectorAll('.lang-option').forEach(el => {
-    el.classList.toggle('selected', el.dataset.lang === STATE.lang);
-  });
-
-  if (isOnboardingDone()) {
-    showScreen('journal');
-  } else {
-    // Stay on onboarding
-    document.getElementById('screen-onboarding').classList.add('active');
-  }
-
-  // System theme listener
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-    if (STATE.theme === 'system') applyTheme('system');
-  });
+  document.querySelectorAll('.lang-option').forEach(el=>el.classList.toggle('selected',el.dataset.lang===S.lang));
+  if(localStorage.getItem('d_onboarded')) showScreen('journal');
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(S.theme==='system')applyTheme('system');});
 }
-
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
 </html>
