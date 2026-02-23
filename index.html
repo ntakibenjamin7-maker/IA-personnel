@@ -1,113 +1,283 @@
-item" id="nav-insights" onclick="showScreen('insights')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-      <span id="nav-i-label">HistoripdateUI();
-}
-function goObStep(s) {
-  document.getElementById(`ob-step-${obStep}`).classList.remove('active');
-  obStep=s;
-  document.getElementById(`ob-step-${s}`).classList.add('active');
-  for(let i=0;i<3;i++) document.getElementById(`dot-${i}`).classList.toggle('done',i<=s);
-}
-function finishOnboarding() {
-  localStorage.setItem('d_onboarded','1');
-  updateUI();
-  showScreen('journal');
-}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diário IA — Journal Intime Intelligent</title>
+  <meta name="description" content="Votre journal intime intelligent et 100% privé." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1a1614;
+      --ink-soft: #4a3f3a;
+      --ink-muted: #9a8c86;
+      --paper: #faf7f4;
+      --paper-warm: #f5f0e8;
+      --paper-dark: #ede8df;
+      --parchment: #e8ddd0;
+      --accent: #c17f5a;
+      --accent-soft: #e8c4a8;
+      --accent-pale: #f7ede3;
+      --sage: #7a9e8a;
+      --sage-pale: #daeae0;
+      --lavender: #9b8db4;
+      --lavender-pale: #eae6f5;
+      --error: #c0555a;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow-soft: 0 2px 20px rgba(26,22,20,0.06);
+      --shadow-card: 0 4px 32px rgba(26,22,20,0.10);
+      --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+      --font-serif: 'Lora', Georgia, serif;
+      --font-sans: 'DM Sans', system-ui, sans-serif;
+    }
+    [data-theme="dark"] {
+      --ink: #f0ebe5; --ink-soft: #c8bdb5; --ink-muted: #8a7e78;
+      --paper: #1a1614; --paper-warm: #221e1b; --paper-dark: #2e2824;
+      --parchment: #3a332e; --accent: #d4956c; --accent-soft: #6b4535;
+      --accent-pale: #2a1e16; --sage: #7aaa8a; --sage-pale: #1a2e22;
+      --lavender: #b4a4cc; --lavender-pale: #231e30;
+      --shadow-soft: 0 2px 20px rgba(0,0,0,0.25);
+      --shadow-card: 0 4px 32px rgba(0,0,0,0.35);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font-sans);background:var(--paper);color:var(--ink);min-height:100vh;transition:background var(--transition),color var(--transition);overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(193,127,90,.06) 0%,transparent 60%),radial-gradient(ellipse 60% 80% at 85% 90%,rgba(155,141,180,.05) 0%,transparent 60%);pointer-events:none;z-index:0}
+    .app{position:relative;z-index:1;max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+    .screen{display:none;flex-direction:column;flex:1;animation:fadeIn .4s ease}
+    .screen.active{display:flex}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
-/* ── JOURNAL ── */
-function onJournalInput() {
-  const txt=document.getElementById('journal-text').value;
-  const w=txt.trim()===''?0:txt.trim().split(/\s+/).length;
-  set('word-count',t('wordCount')(w));
-}
-function saveEntry() {
-  const txt=document.getElementById('journal-text').value.trim();
-  if(!txt){showToast(t('noText'),true);return;}
-  S.entries.unshift({id:Date.now().toString(),content:txt,createdAt:new Date().toISOString(),analysis:null});
-  localStorage.setItem('d_entries',JSON.stringify(S.entries));
-  document.getElementById('journal-text').value=''; onJournalInput();
-  showToast(t('saved'));
-}
+    /* ONBOARDING */
+    #screen-onboarding{justify-content:center;padding:48px 32px}
+    .onboarding-step{display:none;flex-direction:column;animation:fadeIn .35s ease}
+    .onboarding-step.active{display:flex}
+    .step-indicator{display:flex;gap:6px;margin-bottom:40px}
+    .step-dot{height:3px;border-radius:2px;background:var(--parchment);flex:1;transition:background var(--transition)}
+    .step-dot.done{background:var(--accent)}
+    .ob-icon{font-size:56px;margin-bottom:24px;display:block;animation:float 4s ease-in-out infinite}
+    .ob-title{font-family:var(--font-serif);font-size:28px;font-weight:600;line-height:1.3;margin-bottom:12px}
+    .ob-sub{font-size:15px;line-height:1.65;color:var(--ink-soft);margin-bottom:36px}
+    .lang-options{display:flex;flex-direction:column;gap:10px;margin-bottom:36px}
+    .lang-option{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:var(--radius-sm);border:1.5px solid var(--parchment);background:var(--paper-warm);cursor:pointer;transition:all var(--transition);font-family:var(--font-sans);font-size:15px;font-weight:500;color:var(--ink)}
+    .lang-option:hover,.lang-option.selected{border-color:var(--accent);background:var(--accent-pale);color:var(--accent)}
+    .lang-flag{font-size:22px}
+    .privacy-card{background:var(--paper-warm);border:1px solid var(--parchment);border-radius:var(--radius);padding:20px;margin-bottom:36px}
+    .privacy-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;font-size:14px;line-height:1.5;color:var(--ink-soft)}
+    .privacy-row:last-child{margin-bottom:0}
+    .privacy-icon{font-size:18px;flex-shrink:0;margin-top:1px}
 
-/* ── ANALYSE ── */
-async function analyzeEntry() {
-  const txt=document.getElementById('journal-text').value.trim();
-  if(txt.length<20){showToast(t('noText'),true);return;}
-  const btn=document.getElementById('btn-analyze');
-  btn.disabled=true;
-  btn.innerHTML=`<div class="spinner"></div><span>${t('analyzing')}</span>`;
-  try {
-    const res=await fetch('/api/analyze',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({text:txt,lang:S.lang}),
-    });
-    const data=await res.json();
-    if(!res.ok) throw new Error(data.error||t('errGeneric'));
-    const analysis=data.analysis;
-    const entry={id:Date.now().toString(),content:txt,createdAt:new Date().toISOString(),analysis};
-    S.entries.unshift(entry); S.lastAnalysis=analysis;
-    localStorage.setItem('d_entries',JSON.stringify(S.entries));
-    document.getElementById('journal-text').value=''; onJournalInput();
-    renderAnalysis(analysis);
-    showScreen('analysis');
-  } catch(err) {
-    const msg=err.message?.includes('fetch')?t('errNetwork'):err.message?.length<100?err.message:t('errGeneric');
-    showToast(msg,true);
-  } finally {
-    btn.disabled=false;
-    btn.innerHTML=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span id="analyze-label">${t('analyzeBtn')}</span>`;
-  }
-}
+    /* HEADER */
+    .app-header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px 0}
+    .header-title{font-family:var(--font-serif);font-size:18px;font-weight:600;letter-spacing:-.01em}
+    .header-actions{display:flex;gap:4px}
+    .icon-btn{width:40px;height:40px;border-radius:10px;border:none;background:transparent;cursor:pointer;color:var(--ink-soft);font-size:18px;display:flex;align-items:center;justify-content:center;transition:all var(--transition)}
+    .icon-btn:hover{background:var(--paper-dark);color:var(--ink)}
+    .icon-btn svg{width:20px;height:20px}
 
-/* ── RENDU ANALYSE ── */
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function renderAnalysis(a) {
-  const d=(i)=>`animation-delay:${i*80}ms`;
-  document.getElementById('analysis-content').innerHTML=`
-    <div class="analysis-card card-paper" style="${d(0)}">
-      <div class="card-label card-label-accent">✦ ${t('moodLabel')}</div>
-      <div class="mood-display"><span class="mood-emoji">${esc(a.moodEmoji)}</span><span class="mood-label">${esc(a.mood)}</span></div>
+    /* BOTTOM NAV */
+    .bottom-nav{display:none;position:sticky;bottom:0;background:var(--paper);border-top:1px solid var(--parchment);padding:0 8px env(safe-area-inset-bottom,12px);backdrop-filter:blur(20px)}
+    .bottom-nav.visible{display:flex}
+    .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 0;border:none;background:none;cursor:pointer;color:var(--ink-muted);font-family:var(--font-sans);font-size:11px;font-weight:500;transition:color var(--transition)}
+    .nav-item svg{width:22px;height:22px}
+    .nav-item.active{color:var(--accent)}
+
+    /* JOURNAL */
+    .journal-content{flex:1;display:flex;flex-direction:column;padding:20px 24px 0}
+    .date-chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
+    .date-dot{width:5px;height:5px;border-radius:50%;background:var(--accent)}
+    .journal-textarea{flex:1;min-height:280px;background:transparent;border:none;outline:none;resize:none;font-family:var(--font-serif);font-size:17px;line-height:1.75;color:var(--ink);width:100%;caret-color:var(--accent)}
+    .journal-textarea::placeholder{color:var(--ink-muted);font-style:italic}
+    .journal-footer{padding:16px 24px 20px;display:flex;flex-direction:column;gap:12px}
+    .word-count{font-size:12px;color:var(--ink-muted);text-align:center;height:16px}
+    .journal-actions{display:flex;gap:10px}
+
+    /* BUTTONS */
+    .btn{font-family:var(--font-sans);font-size:15px;font-weight:600;border:none;border-radius:var(--radius-sm);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:all var(--transition);text-decoration:none}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .btn-primary{background:var(--ink);color:var(--paper);padding:14px 22px;flex:1}
+    .btn-primary:hover:not(:disabled){background:var(--ink-soft);transform:translateY(-1px);box-shadow:var(--shadow-card)}
+    .btn-accent{background:var(--accent);color:#fff;padding:14px 22px}
+    .btn-accent:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 6px 20px rgba(193,127,90,.35)}
+    .btn-ghost{background:var(--paper-warm);color:var(--ink-soft);padding:14px 18px;border:1px solid var(--parchment)}
+    .btn-ghost:hover:not(:disabled){background:var(--paper-dark)}
+    .btn-full{width:100%}
+    .btn-outline{background:transparent;color:var(--accent);padding:12px 22px;border:1.5px solid var(--accent)}
+    .btn-outline:hover{background:var(--accent-pale)}
+    .btn-danger{background:transparent;color:var(--error);padding:12px 22px;border:1.5px solid var(--error)}
+    .btn-danger:hover{background:rgba(192,85,90,.08)}
+    .btn-text{background:none;color:var(--ink-muted);padding:12px;font-size:14px;font-weight:400}
+    .btn-text:hover{color:var(--ink)}
+    .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+
+    /* ANALYSIS */
+    .analysis-header{padding:20px 24px 0}
+    .analysis-back{display:flex;align-items:center;gap:8px;color:var(--ink-muted);font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;padding:0;margin-bottom:24px;transition:color var(--transition)}
+    .analysis-back:hover{color:var(--ink)}
+    .analysis-back svg{width:16px;height:16px}
+    .analysis-list{flex:1;overflow-y:auto;padding:0 24px 32px;display:flex;flex-direction:column;gap:14px}
+    .analysis-card{border-radius:var(--radius);padding:20px;animation:slideUp .4s ease both}
+    .card-paper{background:var(--paper-warm);border:1px solid var(--parchment)}
+    .card-accent{background:var(--accent-pale);border:1px solid var(--accent-soft)}
+    .card-sage{background:var(--sage-pale);border:1px solid rgba(122,158,138,.3)}
+    .card-lavender{background:var(--lavender-pale);border:1px solid rgba(155,141,180,.25)}
+    .card-label{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-muted);margin-bottom:12px}
+    .card-label-accent{color:var(--accent)}
+    .card-label-sage{color:var(--sage)}
+    .card-label-lavender{color:var(--lavender)}
+    .mood-display{display:flex;align-items:center;gap:14px}
+    .mood-emoji{font-size:40px;line-height:1}
+    .mood-label{font-family:var(--font-serif);font-size:22px;font-weight:600}
+    .bullet-list{display:flex;flex-direction:column;gap:10px}
+    .bullet-item{display:flex;gap:10px;font-size:14px;line-height:1.6;color:var(--ink-soft)}
+    .bullet-marker{font-weight:700;color:var(--accent);flex-shrink:0;width:16px;margin-top:1px}
+    .bullet-marker-sage{color:var(--sage)}
+    .bullet-marker-lavender{color:var(--lavender)}
+    .reframing-text{font-family:var(--font-serif);font-size:15px;line-height:1.75;color:var(--ink-soft);font-style:italic}
+    .micro-action-text{font-size:15px;font-weight:600;line-height:1.5}
+
+    /* INSIGHTS */
+    .insights-list{flex:1;overflow-y:auto;padding:16px 24px 32px;display:flex;flex-direction:column;gap:10px}
+    .entry-card{background:var(--paper-warm);border:1px solid var(--parchment);border-radius:var(--radius);padding:16px 18px;cursor:pointer;transition:all var(--transition)}
+    .entry-card:hover{border-color:var(--accent-soft);box-shadow:var(--shadow-soft);transform:translateY(-1px)}
+    .entry-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+    .entry-date{font-size:12px;color:var(--ink-muted);font-weight:500}
+    .entry-mood-badge{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-pale);border-radius:6px;padding:3px 8px}
+    .entry-preview{font-family:var(--font-serif);font-size:14px;line-height:1.55;color:var(--ink-soft);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:48px 32px;color:var(--ink-muted);text-align:center}
+    .empty-icon{font-size:52px}
+    .empty-title{font-family:var(--font-serif);font-size:18px;color:var(--ink-soft)}
+    .empty-sub{font-size:14px;line-height:1.6}
+
+    /* SETTINGS */
+    .settings-list{flex:1;overflow-y:auto;padding:8px 24px 32px}
+    .settings-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);padding:20px 0 8px}
+    .settings-card{background:var(--paper-warm);border:1px solid var(--parchment);border-radius:var(--radius);overflow:hidden;margin-bottom:4px}
+    .settings-row{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--parchment);cursor:pointer;transition:background var(--transition);gap:12px}
+    .settings-row:last-child{border-bottom:none}
+    .settings-row:hover{background:var(--paper-dark)}
+    .settings-row-left{display:flex;align-items:center;gap:12px}
+    .settings-row-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--accent-pale);flex-shrink:0}
+    .settings-row-icon.sage{background:var(--sage-pale)}
+    .settings-row-icon.danger{background:rgba(192,85,90,.1)}
+    .settings-row-label{font-size:15px;font-weight:500}
+    .settings-row-sub{font-size:12px;color:var(--ink-muted);margin-top:2px}
+    .settings-row-right{display:flex;align-items:center;gap:8px;color:var(--ink-muted);font-size:13px}
+    .settings-row-right svg{width:16px;height:16px}
+    select.settings-select{font-family:var(--font-sans);font-size:13px;font-weight:500;color:var(--ink-soft);background:var(--paper-dark);border:1px solid var(--parchment);border-radius:8px;padding:6px 10px;outline:none;cursor:pointer}
+    .segmented{display:flex;background:var(--paper-dark);border-radius:10px;padding:3px;gap:2px}
+    .seg-btn{flex:1;font-family:var(--font-sans);font-size:12px;font-weight:500;padding:7px;border:none;border-radius:8px;cursor:pointer;background:transparent;color:var(--ink-muted);transition:all var(--transition)}
+    .seg-btn.active{background:var(--paper);color:var(--ink);box-shadow:0 1px 6px rgba(0,0,0,.1)}
+
+    /* MODALS */
+    .modal-overlay{position:fixed;inset:0;background:rgba(26,22,20,.6);backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center;z-index:100;animation:overlayIn .2s ease}
+    .modal-overlay.open{display:flex}
+    @keyframes overlayIn{from{opacity:0}to{opacity:1}}
+    .modal-sheet{background:var(--paper);border-radius:24px 24px 0 0;padding:24px 24px 40px;width:100%;max-width:480px;animation:sheetUp .3s cubic-bezier(.34,1.56,.64,1);max-height:85vh;overflow-y:auto}
+    @keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+    .modal-handle{width:36px;height:4px;background:var(--parchment);border-radius:2px;margin:0 auto 20px}
+    .modal-title{font-family:var(--font-serif);font-size:20px;font-weight:600;margin-bottom:8px}
+    .modal-sub{font-size:14px;color:var(--ink-muted);line-height:1.6;margin-bottom:24px}
+
+    /* TOAST */
+    .toast-container{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+    .toast{background:var(--ink);color:var(--paper);font-size:13px;font-weight:500;padding:10px 18px;border-radius:100px;box-shadow:var(--shadow-card);animation:toastIn .3s ease,toastOut .3s ease 2.7s both;white-space:nowrap;max-width:320px;text-align:center}
+    .toast.error{background:var(--error)}
+    @keyframes toastIn{from{opacity:0;transform:translateY(10px) scale(.95)}to{opacity:1;transform:none}}
+    @keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateY(6px)}}
+
+    @media(min-width:540px){
+      body{padding:24px 0;display:flex;justify-content:center}
+      .app{min-height:calc(100vh - 48px);height:calc(100vh - 48px);border-radius:24px;overflow:hidden;box-shadow:var(--shadow-card),0 0 0 1px var(--parchment)}
+      .bottom-nav{border-radius:0 0 24px 24px}
+    }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ONBOARDING -->
+  <div class="screen active" id="screen-onboarding">
+    <div class="step-indicator">
+      <div class="step-dot done" id="dot-0"></div>
+      <div class="step-dot" id="dot-1"></div>
+      <div class="step-dot" id="dot-2"></div>
     </div>
-    ${a.patterns?.length?`<div class="analysis-card card-paper" style="${d(1)}">
-      <div class="card-label">◈ ${t('patternsLabel')}</div>
-      <div class="bullet-list">${a.patterns.map(p=>`<div class="bullet-item"><span class="bullet-marker">•</span><span>${esc(p)}</span></div>`).join('')}</div>
-    </div>`:''}
-    <div class="analysis-card card-lavender" style="${d(2)}">
-      <div class="card-label card-label-lavender">◇ ${t('questionsLabel')}</div>
-      <div class="bullet-list">${(a.deepQuestions||[]).map((q,i)=>`<div class="bullet-item"><span class="bullet-marker bullet-marker-lavender">${i+1}.</span><span>${esc(q)}</span></div>`).join('')}</div>
-    </div>
-    <div class="analysis-card card-accent" style="${d(3)}">
-      <div class="card-label card-label-accent">✿ ${t('reframingLabel')}</div>
-      <p class="reframing-text">${esc(a.reframing)}</p>
-    </div>
-    <div class="analysis-card card-sage" style="${d(4)}">
-      <div class="card-label card-label-sage">▸ ${t('microLabel')}</div>
-      <p class="micro-action-text">${esc(a.microAction)}</p>
-    </div>`;
-}
 
-/* ── HISTORIQUE ── */
-function renderInsights() {
-  const c=document.getElementById('insights-list');
-  if(!S.entries.length){
-    c.innerHTML=`<div class="empty-state"><span class="empty-icon">📔</span><div class="empty-title">${t('emptyTitle')}</div><div class="empty-sub">${t('emptySub')}</div></div>`;
-    return;
-  }
-  const loc=S.lang==='pt'?'pt-BR':S.lang==='en'?'en-US':'fr-FR';
-  c.innerHTML=S.entries.map(e=>{
-    const d=new Date(e.createdAt).toLocaleDateString(loc,{day:'numeric',month:'short',year:'numeric'});
-    const m=e.analysis;
-    return `<div class="entry-card"><div class="entry-card-top"><span class="entry-date">${d}</span>${m?`<div class="entry-mood-badge">${esc(m.moodEmoji)} ${esc(m.mood)}</div>`:''}</div><div class="entry-preview">${esc(e.content)}</div></div>`;
-  }).join('');
-}
+    <!-- Étape 1 : Langue -->
+    <div class="onboarding-step active" id="ob-step-0">
+      <span class="ob-icon">📔</span>
+      <h1 class="ob-title">Diário IA</h1>
+      <p class="ob-sub" id="ob-sub-0">Votre journal intime intelligent et 100% privé.</p>
+      <div class="lang-options">
+        <button class="lang-option" data-lang="fr" onclick="selectLang('fr')"><span class="lang-flag">🇫🇷</span> Français</button>
+        <button class="lang-option" data-lang="en" onclick="selectLang('en')"><span class="lang-flag">🇬🇧</span> English</button>
+        <button class="lang-option" data-lang="pt" onclick="selectLang('pt')"><span class="lang-flag">🇧🇷</span> Português</button>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="goObStep(1)" id="ob-btn-0">Commencer →</button>
+    </div>
 
-/* ── PARAMÈTRES ── */
-function changeLang(code){S.lang=code;localStorage.setItem('d_lang',code);updateUI();}
-function exportData(){
-  const blob=new Blob([JSON.stringify(S.entries,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download=`diario-ia-${new Date().toISOString().slice(0,10)}.json`;a.click();
-  showToast(t('exported'));
-}
-function confirmDeleteAll(){openModal('modal-delete'
+    <!-- Étape 2 : Vie privée -->
+    <div class="onboarding-step" id="ob-step-1">
+      <span class="ob-icon">🔒</span>
+      <h2 class="ob-title" id="ob-title-1">Votre vie privée</h2>
+      <div class="privacy-card">
+        <div class="privacy-row"><span class="privacy-icon">📱</span><span id="pr-1">Tout est stocké localement sur votre appareil. Aucun serveur, aucun compte.</span></div>
+        <div class="privacy-row"><span class="privacy-icon">🤖</span><span id="pr-2">L'analyse IA est incluse — aucune clé API requise de votre part.</span></div>
+        <div class="privacy-row"><span class="privacy-icon">🔐</span><span id="pr-3">Vos entrées ne sont jamais lues ni stockées par nous.</span></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="goObStep(2)" id="ob-btn-1">J'ai compris ✓</button>
+    </div>
+
+    <!-- Étape 3 : Prêt -->
+    <div class="onboarding-step" id="ob-step-2">
+      <span class="ob-icon">🚀</span>
+      <h2 class="ob-title" id="ob-title-2">Tout est prêt !</h2>
+      <p class="ob-sub" id="ob-sub-2">L'analyse IA est incluse — commencez à écrire dès maintenant.</p>
+      <button class="btn btn-accent btn-full" onclick="finishOnboarding()" id="ob-btn-2">Commencer le journal →</button>
+    </div>
+  </div>
+
+  <!-- JOURNAL -->
+  <div class="screen" id="screen-journal">
+    <div class="app-header">
+      <span class="header-title" id="h-journal">Journal du jour</span>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="saveEntry()" title="Enregistrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        </button>
+        <button class="icon-btn" onclick="showToast('🎤 Bientôt disponible !')" title="Dicter">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="journal-content">
+      <div class="date-chip"><span class="date-dot"></span><span id="journal-date"></span></div>
+      <textarea class="journal-textarea" id="journal-text" oninput="onJournalInput()"></textarea>
+    </div>
+    <div class="journal-footer">
+      <div class="word-count" id="word-count"></div>
+      <div class="journal-actions">
+        <button class="btn btn-accent btn-full" id="btn-analyze" onclick="analyzeEntry()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span id="analyze-label">Analyser avec l'IA</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYSE RÉSULTAT -->
+  <div class="screen" id="screen-analysis">
+    <div class="analysis-header">
+      <button class="analysis-back" onclick="showScreen('journal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <span id="back-label">Retour au journal</span>
+      </button>
+    </div>
+    <div class="analysis-list" id="analysis-cont
