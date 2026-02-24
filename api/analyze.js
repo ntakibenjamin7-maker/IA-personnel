@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  // CORS pour permettre les appels depuis le navigateur
+  // CORS pour le navigateur
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -7,13 +7,12 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ success: false, error: 'Méthode non autorisée' });
 
-  // 🔹 DEBUG : vérifier le body reçu par Vercel
+  // 🔹 DEBUG : vérifier le body reçu
   console.log('req.body:', req.body);
   console.log('type of req.body:', typeof req.body);
 
   const { text, lang } = req.body || {};
 
-  // Vérification que le body contient bien du JSON
   if (!req.body || Object.keys(req.body).length === 0) {
     return res.status(400).json({
       success: false,
@@ -21,12 +20,10 @@ export default async function handler(req, res) {
     });
   }
 
-  // Validation du texte
   if (!text || text.trim().length < 10) {
     return res.status(400).json({ success: false, error: 'Texte trop court.' });
   }
 
-  // Validation de la langue
   const supportedLangs = ['fr', 'pt', 'en'];
   const language = supportedLangs.includes(lang) ? lang : 'en';
   const langInstruction =
@@ -52,7 +49,6 @@ NO text outside the JSON.`;
   if (!apiKey) return res.status(500).json({ success: false, error: 'Clé API non configurée sur le serveur.' });
 
   try {
-    // 🔹 Appel à l'API Claude
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -61,7 +57,7 @@ NO text outside the JSON.`;
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-3-haiku-20240307',
+        model: 'claude-3', // modèle standard recommandé
         max_tokens: 1024,
         messages: [
           { role: 'system', content: systemPrompt },
@@ -73,6 +69,7 @@ NO text outside the JSON.`;
     const data = await response.json();
 
     if (!response.ok) {
+      console.log('Erreur API Anthropic:', data); // 🔹 debug complet dans les logs
       return res.status(response.status).json({
         success: false,
         error: "Erreur API Anthropic",
@@ -80,7 +77,6 @@ NO text outside the JSON.`;
       });
     }
 
-    // Extraction du texte renvoyé par Claude
     const rawText = data?.completion?.[0]?.content?.[0]?.text || data?.completion?.[0]?.text || '';
 
     if (!rawText) {
@@ -91,7 +87,6 @@ NO text outside the JSON.`;
       });
     }
 
-    // Nettoyer les éventuels blocs ```json```
     const clean = rawText.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
 
     let analysis;
@@ -114,4 +109,4 @@ NO text outside the JSON.`;
       message: err.message
     });
   }
-                               }
+      }
