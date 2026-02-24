@@ -1,54 +1,83 @@
-try {
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 1024,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: `Journal entry:\n---\n${text}\n---\nJSON only.` }],
-    }),
-  });
+export default async function handler(req, res) {
+  // CORS pour permettre les appels depuis le navigateur
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  const data = await response.json();
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ success: false, error: 'Méthode non autorisée' });
 
-  if (!response.ok) {
-    return res.status(response.status).json({
-      error: "Erreur API Anthropic",
-      details: data
-    });
+  // Clé API stockée dans Vercel Environment Variables — jamais visible côté client
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return res.status(500).json({ success: false, error: 'Clé API non configurée sur le serveur.' });
+
+  const { text, lang } = req.body || {};
+
+  if (!text || text.trim().length < 10) {
+    return res.status(400).json({ success: false, error: 'Texte trop court.' });
   }
 
-  const rawText = data.content?.[0]?.text;
+  // Vérification de la langue
+  const supportedLangs = ['fr', 'pt', 'en'];
+  const language = supportedLangs.includes(lang) ? lang : 'en';
 
-  if (!rawText) {
-    return res.status(500).json({
-      error: "Réponse vide du modèle",
-      details: data
-    });
-  }
+  const langInstruction =
+    language === 'fr' ? 'Réponds entièrement en FRANÇAIS.' :
+    language === 'pt' ? 'Responde completamente em PORTUGUÊS.' :
+                        'Reply entirely in ENGLISH.';
 
-  const clean = rawText.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+  const systemPrompt = `You are a compassionate, empathetic, non-judgmental AI therapeutic journal coach.
+${langInstruction}
 
-  let analysis;
+Analyze the journal entry and return ONLY a valid JSON object with this exact structure:
+{
+  "mood": "Short label for the detected mood",
+  "moodEmoji": "A single emoji representing the mood",
+  "patterns": ["Pattern observed", "Second pattern if present"],
+  "deepQuestions": ["Question 1", "Question 2", "Question 3"],
+  "reframing": "A gentle positive reframing in 2-3 sentences.",
+  "microAction": "One small concrete action for today."
+}
+NO text outside the JSON.`;
+
   try {
-    analysis = JSON.parse(clean);
-  } catch (parseError) {
-    return res.status(500).json({
-      error: "Erreur JSON.parse",
-      rawResponse: rawText
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: `Journal entry:\n---\n${text}\n---\nJSON only.` }
+        ],
+      }),
     });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return res.status(response.status).json({ success: false, error: data?.error?.message || 'Erreur Claude API' });
+    }
+
+    // Extraction et nettoyage du JSON
+    const rawText = data?.completion?.[0]?.content?.[0]?.text || data?.completion?.[0]?.text || '';
+    const clean = rawText.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+
+    let analysis;
+    try {
+      analysis = JSON.parse(clean);
+    } catch (jsonErr) {
+      return res.status(500).json({ success: false, error: 'Erreur lors du parsing du JSON renvoyé par Claude.' });
+    }
+
+    return res.status(200).json({ success: true, analysis });
+
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message || 'Erreur serveur' });
   }
-
-  return res.status(200).json({ analysis });
-
-} catch (err) {
-  return res.status(500).json({
-    error: "Erreur serveur",
-    message: err.message
-  });
-                 }
+}
