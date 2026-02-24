@@ -7,20 +7,28 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ success: false, error: 'Méthode non autorisée' });
 
-  // Clé API stockée dans Vercel Environment Variables — jamais visible côté client
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return res.status(500).json({ success: false, error: 'Clé API non configurée sur le serveur.' });
+  // 🔹 DEBUG : vérifier le body reçu par Vercel
+  console.log('req.body:', req.body);
+  console.log('type of req.body:', typeof req.body);
 
   const { text, lang } = req.body || {};
 
+  // Vérification que le body contient bien du JSON
+  if (!req.body || Object.keys(req.body).length === 0) {
+    return res.status(400).json({
+      success: false,
+      error: 'Aucun texte reçu. Vérifie que tu envoies du JSON avec Content-Type: application/json.'
+    });
+  }
+
+  // Validation du texte
   if (!text || text.trim().length < 10) {
     return res.status(400).json({ success: false, error: 'Texte trop court.' });
   }
 
-  // Vérification de la langue
+  // Validation de la langue
   const supportedLangs = ['fr', 'pt', 'en'];
   const language = supportedLangs.includes(lang) ? lang : 'en';
-
   const langInstruction =
     language === 'fr' ? 'Réponds entièrement en FRANÇAIS.' :
     language === 'pt' ? 'Responde completamente em PORTUGUÊS.' :
@@ -40,7 +48,11 @@ Analyze the journal entry and return ONLY a valid JSON object with this exact st
 }
 NO text outside the JSON.`;
 
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return res.status(500).json({ success: false, error: 'Clé API non configurée sur le serveur.' });
+
   try {
+    // 🔹 Appel à l'API Claude
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -49,7 +61,7 @@ NO text outside the JSON.`;
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'claude-3-haiku-20240307',
         max_tokens: 1024,
         messages: [
           { role: 'system', content: systemPrompt },
@@ -61,23 +73,45 @@ NO text outside the JSON.`;
     const data = await response.json();
 
     if (!response.ok) {
-      return res.status(response.status).json({ success: false, error: data?.error?.message || 'Erreur Claude API' });
+      return res.status(response.status).json({
+        success: false,
+        error: "Erreur API Anthropic",
+        details: data
+      });
     }
 
-    // Extraction et nettoyage du JSON
+    // Extraction du texte renvoyé par Claude
     const rawText = data?.completion?.[0]?.content?.[0]?.text || data?.completion?.[0]?.text || '';
+
+    if (!rawText) {
+      return res.status(500).json({
+        success: false,
+        error: "Réponse vide du modèle",
+        details: data
+      });
+    }
+
+    // Nettoyer les éventuels blocs ```json```
     const clean = rawText.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
 
     let analysis;
     try {
       analysis = JSON.parse(clean);
-    } catch (jsonErr) {
-      return res.status(500).json({ success: false, error: 'Erreur lors du parsing du JSON renvoyé par Claude.' });
+    } catch (parseError) {
+      return res.status(500).json({
+        success: false,
+        error: "Erreur JSON.parse",
+        rawResponse: rawText
+      });
     }
 
     return res.status(200).json({ success: true, analysis });
 
   } catch (err) {
-    return res.status(500).json({ success: false, error: err.message || 'Erreur serveur' });
+    return res.status(500).json({
+      success: false,
+      error: "Erreur serveur",
+      message: err.message
+    });
   }
-}
+                               }
